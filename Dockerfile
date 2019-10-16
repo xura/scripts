@@ -1,3 +1,2 @@
-FROM scratch
-ADD hello /
-CMD ["/hello"]
+FROM node:latest
+CMD ["node -v"]
