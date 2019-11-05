@@ -17,6 +17,15 @@ Install Dependencies:
     paths:
       - hermes/node_modules/
 
+Test Environment Variables:
+  stage: Build
+  variables:
+    API_SECRET: "PRODUCTION -SECRET"
+  script:
+    - cd hermes
+    - yarn build
+    - bin/hermes deploy
+
 Deploy:
   stage: Deploy
   image:

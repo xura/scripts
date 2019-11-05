@@ -1,9 +1,9 @@
-import {inject, autoInjectable} from "tsyringe";
+import { inject, autoInjectable } from "tsyringe";
 import ICdnDeploy from "../../interfaces/deploy/cdn";
 
 @autoInjectable()
 export default class {
-    constructor(@inject('ICdnDeploy') private cdn?: ICdnDeploy) {}
+    constructor(@inject('ICdnDeploy') private cdn?: ICdnDeploy) { }
 
     /**
      * Upload a file to the CDN
