@@ -28,7 +28,7 @@ async function run(argv) {
   // .exclude(['meta', 'strings', 'print', 'filesystem', 'semver', 'system', 'prompt', 'http', 'template', 'patching'])
   // and run it
   // send it back (for testing, mostly)
-  return await cli.run(argv)
+  return cli.run(argv)
 }
 
-module.exports = { run }
+module.exports = { run };

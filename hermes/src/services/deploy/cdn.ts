@@ -7,8 +7,10 @@ export default class {
 
     /**
      * Upload a file to the CDN
-     * @param {File} file
      * @return {[boolean, string]} status
+     * @param {string} filePath
+     * @param {string} fileName
      */
-    upload = (file: File): Promise<[boolean, string]> => this.cdn.upload(file)
+    upload = (filePath: string, fileName: string): Promise<[boolean, string]> =>
+        this.cdn.upload(filePath, fileName);
 }

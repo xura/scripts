@@ -1,3 +1,3 @@
 export default interface ICdnDeploy {
-    upload(file: File): Promise<[boolean, string]>
+    upload(filePath: string, filename: string): Promise<[boolean, string]>
 }
