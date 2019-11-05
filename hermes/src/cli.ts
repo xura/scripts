@@ -1,11 +1,12 @@
 import * as path from "path";
 const { build } = require('gluegun');
-require('dotenv').config({
-  path: path.resolve(__dirname + '/../.prod.env')
-});
 import 'reflect-metadata'
 import {container} from 'tsyringe'
 import Spaces from './adapters/spaces/spaces'
+
+require('dotenv').config({
+  path: path.resolve(__dirname + '/../.prod.env')
+});
 
 /**
  * Create the cli and kick it off
