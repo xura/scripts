@@ -8,7 +8,7 @@ const deploy: GluegunCommand = {
         const cdn = new CdnDeploy();
         const { print } = toolbox;
 
-        cdn.upload(''. '').then(response => {
+        cdn.upload('', '').then(response => {
             print.info(response[1]);
         }).catch(error => {
             print.error(error);
