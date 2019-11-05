@@ -1,5 +1,5 @@
 import CdnDeploy from '../services/deploy/cdn';
-import {GluegunCommand} from "gluegun";
+import { GluegunCommand } from "gluegun";
 
 const deploy: GluegunCommand = {
     name: 'deploy',
@@ -10,6 +10,8 @@ const deploy: GluegunCommand = {
 
         cdn.upload({} as File).then(response => {
             print.info(response[1]);
+        }).catch(error => {
+            print.error(error);
         });
     },
 };
