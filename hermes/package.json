@@ -33,7 +33,8 @@
   "dependencies": {
     "aws-sdk": "^2.563.0",
     "dotenv": "^8.2.0",
-    "gluegun": "latest"
+    "gluegun": "latest",
+    "s3-stream-upload": "^2.0.2"
   },
   "devDependencies": {
     "@types/jest": "^24.0.18",
