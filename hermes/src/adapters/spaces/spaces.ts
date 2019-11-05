@@ -1,5 +1,5 @@
 import ICdnDeploy from "../../interfaces/deploy/cdn";
-const API_SECRET = process.env.DEVELOPMENT_SECRET || 'DEVELOPMENT - SECRET';
+const API_SECRET = process.env.API_SECRET || 'DEVELOPMENT - SECRET';
 
 
 export default class implements ICdnDeploy {
