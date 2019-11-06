@@ -3,7 +3,9 @@ import ICdnDeploy from "../../interfaces/deploy/cdn";
 
 @autoInjectable()
 export default class {
-    constructor(@inject('ICdnDeploy') private cdn?: ICdnDeploy) { }
+    constructor(
+        @inject('ICdnDeploy') private cdn?: ICdnDeploy
+    ) { }
 
     /**
      * Upload a file to the CDN
@@ -12,5 +14,5 @@ export default class {
      * @param {string} fileName
      */
     upload = (filePath: string, fileName: string): Promise<[boolean, string]> =>
-        this.cdn.upload(filePath, fileName);
+        this.cdn.upload(filePath, fileName)
 }
