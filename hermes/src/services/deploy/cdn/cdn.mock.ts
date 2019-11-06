@@ -1,5 +1,5 @@
 import {instance, mock, when} from "ts-mockito";
-import ICdnDeploy from "../../interfaces/deploy/cdn";
+import ICdnDeploy from "../../../interfaces/deploy/cdn";
 
 export const cdnMock = () => {
 

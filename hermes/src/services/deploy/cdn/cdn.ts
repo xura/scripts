@@ -1,5 +1,5 @@
 import { inject, autoInjectable } from "tsyringe";
-import ICdnDeploy from "../../interfaces/deploy/cdn";
+import ICdnDeploy from "../../../interfaces/deploy/cdn";
 
 @autoInjectable()
 export default class {

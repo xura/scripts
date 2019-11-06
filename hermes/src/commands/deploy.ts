@@ -1,19 +1,20 @@
-import CdnDeploy from '../services/deploy/cdn';
-import { GluegunCommand } from "gluegun";
+import CdnDeploy from '../services/deploy/cdn/cdn';
+import validator from '../validation/services/validator';
+import {Toolbox} from "gluegun/build/types/domain/toolbox";
+import {GluegunCommand} from "gluegun";
 
 const deploy: GluegunCommand = {
     name: 'deploy',
     alias: 'd',
-    run: async toolbox => {
-        const cdn = new CdnDeploy();
-        const { print } = toolbox;
+    run: validator((toolbox: Toolbox) => {
+        const {print} = toolbox;
+        const {filePath, fileName} = toolbox.parameters.options;
 
-        cdn.upload('', '').then(response => {
-            print.info(response[1]);
-        }).catch(error => {
-            print.error(error);
-        });
-    },
+        new CdnDeploy()
+            .upload(filePath, fileName)
+            .then(response => print.info(response[1]))
+            .catch(error => print.error(error));
+    })(),
 };
 
 module.exports = deploy;
