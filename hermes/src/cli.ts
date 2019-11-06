@@ -3,7 +3,7 @@ import * as path from "path";
 const {build} = require('gluegun');
 import 'reflect-metadata'
 import {container} from 'tsyringe'
-import Spaces from './adapters/spaces/spaces'
+import Spaces from './adapters/spaces'
 import {cdnMock} from "./services/deploy/cdn/cdn.mock";
 
 require('dotenv').config({
