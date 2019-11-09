@@ -1,5 +1,5 @@
-import {Toolbox} from "gluegun/build/types/domain/toolbox";
-import {TCommandValidators, VALIDATOR} from "../commands/deploy";
+import { Toolbox } from "gluegun/build/types/domain/toolbox";
+import { TCommandValidators, VALIDATOR } from "../commands/deploy";
 
 export type TValidator = (command: ((toolbox: Toolbox) => void)) => void;
 
@@ -16,7 +16,7 @@ export default (validators: TCommandValidators, toolbox: Toolbox): TValidator =>
         .arguments
         .find(
             argument => {
-                const c =  argument[1].find(
+                const c = argument[1].find(
                     validator => {
                         const b = validations[validator](argument[0], toolbox.parameters.options[argument[0]])[0] === false;
                         return b;
@@ -27,8 +27,8 @@ export default (validators: TCommandValidators, toolbox: Toolbox): TValidator =>
                 return c !== undefined;
             }
         );
-    //@ts-ignore
+    // @ts-ignore
     const b = validated;
 
-    return (command) => command(toolbox);
+    return (command) => Promise.resolve(command(toolbox));
 }
