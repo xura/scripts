@@ -1,8 +1,36 @@
-﻿// Learn more about F# at http://fsharp.org
+﻿open System
+open Argu
 
-open System
+type CliError =
+    | ArgumentsNotSpecified
+
+type CmdArgs =
+    | [<AltCommandLine("-p")>] Print of message:string
+with
+    interface IArgParserTemplate with
+        member this.Usage =
+            match this with
+            | Print _ -> "Print a message"
+
+let getExitCode result =
+    match result with
+    | Ok () -> 0
+    | Error err ->
+        match err with
+        | ArgumentsNotSpecified -> 1
+
+let runPrint print = 
+    printfn "%s" print
+    Ok ()
 
 [<EntryPoint>]
-let main argv =
-    printfn "Hello World from F#!"
-    0 // return an integer exit code
+let main argv = 
+    let errorHandler = ProcessExiter(colorizer = function ErrorCode.HelpText -> None | _ -> Some ConsoleColor.Red)
+    let parser = ArgumentParser.Create<CmdArgs>(programName = "initech", errorHandler = errorHandler)
+    
+    match parser.ParseCommandLine argv with
+    | p when p.Contains(Print) -> runPrint (p.GetResult(Print))
+    | _ ->
+        printfn "%s" (parser.PrintUsage())
+        Error ArgumentsNotSpecified
+    |> getExitCode
