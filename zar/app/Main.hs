@@ -1,16 +1,27 @@
 module Main where
 
-import Lib
+import Data.List
+import Data.Monoid
 import Options.Applicative
+import Deploy
+
+sample :: Parser Sample
+sample = subparser
+       ( command "hello"
+         (info hello
+               (progDesc "Print greeting"))
+      <> command "goodbye"
+         (info (pure Goodbye)
+               (progDesc "Say goodbye"))
+       )
+      <|> deployCommand
+
+run :: Sample -> IO ()
+run (Hello targets) = putStrLn $ "Hello, " ++ intercalate ", " targets ++ "!"
+run Goodbye = putStrLn "Goodbye."
+
+opts :: ParserInfo Sample
+opts = info (sample <**> helper) idm
 
 main :: IO ()
-main = greet =<< execParser opts
-  where
-    opts = info (sample <**> helper)
-      ( fullDesc
-     <> progDesc "Print a greeting for TARGET"
-     <> header "hello - a test for optparse-applicative" )
-
-greet :: Sample -> IO ()
-greet (Sample h False n) = putStrLn $ "Hello, " ++ h ++ replicate n '!'
-greet _ = return ()
+main = execParser opts >>= run
