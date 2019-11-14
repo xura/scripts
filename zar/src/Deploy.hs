@@ -1,7 +1,7 @@
 module Deploy where
 
-import Options.Applicative
 import Data.Semigroup ((<>))
+import Options.Applicative
 
 data Sample
   = Hello [String]
@@ -12,10 +12,5 @@ hello :: Parser Sample
 hello = Hello <$> many (argument str (metavar "TARGET..."))
 
 deployCommand :: Parser Deploy.Sample
-deployCommand = subparser
-                       ( command "bonjour"
-                         (info hello
-                               (progDesc "Print greeting"))
-                      <> commandGroup "French commands:"
-                      <> hidden
-                      )
+deployCommand =
+  subparser (command "bonjour" (info hello (progDesc "Print greeting")) <> commandGroup "French commands:" <> hidden)

@@ -34,16 +34,15 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - optparse-applicative
     - zar
 
-#tests:
-#  zar-test:
-#    main:                Spec.hs
-#    source-dirs:         test
-#    ghc-options:
-#    - -threaded
-#    - -rtsopts
-#    - -with-rtsopts=-N
-#    dependencies:
-#    - zar
+tests:
+  zar-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - zar

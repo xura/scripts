@@ -2,19 +2,15 @@ module Main where
 
 import Data.List
 import Data.Monoid
-import Options.Applicative
 import Deploy
+import Options.Applicative
 
 sample :: Parser Sample
-sample = subparser
-       ( command "hello"
-         (info hello
-               (progDesc "Print greeting"))
-      <> command "goodbye"
-         (info (pure Goodbye)
-               (progDesc "Say goodbye"))
-       )
-      <|> deployCommand
+sample =
+  subparser
+    (command "hello" (info hello (progDesc "Print greeting")) <>
+     command "goodbye" (info (pure Goodbye) (progDesc "Say goodbye"))) <|>
+  deployCommand
 
 run :: Sample -> IO ()
 run (Hello targets) = putStrLn $ "Hello, " ++ intercalate ", " targets ++ "!"

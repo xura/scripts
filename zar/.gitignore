@@ -1,5 +1,3 @@
 .stack-work/
-.idea
-dist-newstyle
-out
+zar.cabal
 *~
