@@ -8,9 +8,14 @@ data Sample
   | Goodbye
   deriving (Eq, Show)
 
+newtype Deploy = ToSpaces String deriving (Eq, Show)
+
 hello :: Parser Sample
 hello = Hello <$> many (argument str (metavar "TARGET..."))
 
-deployCommand :: Parser Deploy.Sample
+deploy :: Parser Deploy
+deploy = ToSpaces <$> argument str (metavar "FILE...")
+
+deployCommand :: Parser Deploy
 deployCommand =
-  subparser (command "bonjour" (info hello (progDesc "Print greeting")) <> commandGroup "French commands:" <> hidden)
+  subparser (command "deploy" (info deploy (progDesc "Deploy a given --file")) <> commandGroup "DevOps commands:" <> hidden)

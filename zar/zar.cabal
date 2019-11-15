@@ -27,8 +27,6 @@ source-repository head
 
 library
   exposed-modules:
-      Deploy
-      Lib
   other-modules:
       Paths_zar
   hs-source-dirs:
