@@ -1,34 +1,57 @@
+{-# LANGUAGE Arrows #-}
+
 module Main where
 
 import Data.List
 import Data.Monoid
 import Options.Applicative
+import Options.Applicative.Arrows
 
-data Sample
-  = Hello [String]
-  | Goodbye
-  deriving (Eq, Show)
+newtype Command =
+  SpacesDeploy SpacesDeployOpts
+  deriving (Show)
 
-hello :: Parser Sample
-hello = Hello <$> many (argument str (metavar "TARGET..."))
+newtype SpacesDeployOpts =
+  SpacesDeployOpts
+    { filePath :: String --FilePath
+    }
+  deriving (Show)
 
-sample :: Parser Sample
-sample = subparser (command "deploy" deploy <> commandGroup "DevOps Commands:" <> hidden)
+spacesDeployOpts :: Parser SpacesDeployOpts
+spacesDeployOpts =
+  runA $
+  proc () ->
+  do filePath <- (asA . strOption)
+                   (long "filePath" <> metavar "FILE_PATH" <> value "dist")
+                   -< ()
+     returnA -< SpacesDeployOpts filePath
 
-spaces :: Parser Sample
-spaces =
+--spaces :: Parser Command
+--spaces = SpacesDeploy <$> argument str (metavar "TARGET...")
+spacesParser :: Parser Command
+spacesParser =
+  runA $
+  proc () ->
+  do opts <- asA spacesDeployOpts -< ()
+     returnA -< SpacesDeploy opts
+
+parser :: Parser Command
+parser = subparser (command "deploy" deploy <> commandGroup "DevOps Commands:" <> hidden)
+
+providers :: Parser Command
+providers =
   subparser
-    (command "spaces" (info hello (progDesc "Deploy a given --file to Digital Ocean Spaces CDN")) <> metavar "PROVIDER")
+    (command "spaces" (info spacesParser (progDesc "Deploy a given --file to Digital Ocean Spaces CDN")) <>
+     metavar "PROVIDER")
 
-deploy :: ParserInfo Sample
-deploy = info (spaces <**> helper) (progDesc "Issue a deploy command to a PROVIDER")
+deploy :: ParserInfo Command
+deploy = info (providers <**> helper) (progDesc "Issue a deploy command to a PROVIDER")
 
-run :: Sample -> IO ()
-run (Hello targets) = putStrLn $ "Hello, " ++ intercalate ", " targets ++ "!"
-run Goodbye = putStrLn "Goodbye."
+run :: Command -> IO ()
+run (SpacesDeploy filePath) = putStrLn "Hello,!"
 
-opts :: ParserInfo Sample
-opts = info (sample <**> helper) idm
+opts :: ParserInfo Command
+opts = info (parser <**> helper) idm
 
 main :: IO ()
 main = execParser opts >>= run
