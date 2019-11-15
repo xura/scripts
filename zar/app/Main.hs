@@ -13,24 +13,15 @@ hello :: Parser Sample
 hello = Hello <$> many (argument str (metavar "TARGET..."))
 
 sample :: Parser Sample
-sample =
-  subparser
-    (command "hello" (info hello (progDesc "Print greeting")) <>
-     command "goodbye" (info (pure Goodbye) (progDesc "Say goodbye"))) <|>
-  subparser
-    (command "bonjour" (info hello (progDesc "Print greeting")) <>
-     command "au-revoir" (info (pure Goodbye) (progDesc "Say goodbye")) <>
-     command "deploy" deploy <>
-     commandGroup "French commands:" <>
-     hidden)
+sample = subparser (command "deploy" deploy <> commandGroup "DevOps Commands:" <> hidden)
 
-goodbye :: Parser Sample
-goodbye = 
+spaces :: Parser Sample
+spaces =
   subparser
-    (command "hello" (info hello (progDesc "Print greeting")))
+    (command "spaces" (info hello (progDesc "Deploy a given --file to Digital Ocean Spaces CDN")) <> metavar "PROVIDER")
 
 deploy :: ParserInfo Sample
-deploy = info (goodbye <**> helper) (progDesc "Say goodbye")
+deploy = info (spaces <**> helper) (progDesc "Issue a deploy command to a PROVIDER")
 
 run :: Sample -> IO ()
 run (Hello targets) = putStrLn $ "Hello, " ++ intercalate ", " targets ++ "!"
