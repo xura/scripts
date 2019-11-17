@@ -1,0 +1,4 @@
+/hermes/node_modules
+**/docs
+**/__tests__
+/hermes/.prod.env

@@ -24,7 +24,7 @@ async function run(argv) {
       }
     }
     return instances[process.env.NODE_ENV]
-  })();
+  })()
 
   container.register('ICdnDeploy', injections.ICdnDeploy)
 

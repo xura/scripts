@@ -35,8 +35,12 @@ const deploy: GluegunCommand = {
 
         new CdnDeploy()
             .upload(filePath, fileName)
-            .then(response => print.info(response[1]))
-            .catch(error => print.error(error));
+            .then(response => print.info(`${fileName} uploaded successfully`))
+            .catch(error => {
+                if (error) {
+                    print.error(`Error uploading ${fileName}`)
+                }
+            });
     })
 };
 

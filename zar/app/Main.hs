@@ -1,57 +1,128 @@
-{-# LANGUAGE Arrows #-}
-
+{-# LANGUAGE Arrows, CPP #-}
 module Main where
 
-import Data.List
-import Data.Monoid
 import Options.Applicative
 import Options.Applicative.Arrows
 
-newtype Command =
-  SpacesDeploy SpacesDeployOpts
-  deriving (Show)
+import Data.Monoid
 
-newtype SpacesDeployOpts =
-  SpacesDeployOpts
-    { filePath :: String --FilePath
-    }
-  deriving (Show)
+#if __GLASGOW_HASKELL__ <= 702
+(<>) :: Monoid a => a -> a -> a
+(<>) = mappend
+#endif
 
-spacesDeployOpts :: Parser SpacesDeployOpts
-spacesDeployOpts =
-  runA $
-  proc () ->
-  do filePath <- (asA . strOption)
-                   (long "filePath" <> metavar "FILE_PATH" <> value "dist")
-                   -< ()
-     returnA -< SpacesDeployOpts filePath
+data Args = Args CommonOpts Command
+  deriving Show
 
---spaces :: Parser Command
---spaces = SpacesDeploy <$> argument str (metavar "TARGET...")
-spacesParser :: Parser Command
-spacesParser =
-  runA $
-  proc () ->
-  do opts <- asA spacesDeployOpts -< ()
-     returnA -< SpacesDeploy opts
+data CommonOpts = CommonOpts
+  { optVerbosity :: Int }
+  deriving Show
 
-parser :: Parser Command
-parser = subparser (command "deploy" deploy <> commandGroup "DevOps Commands:" <> hidden)
+data Command
+  = Install ConfigureOpts InstallOpts
+  | Update
+  | Configure ConfigureOpts
+  | Build BuildOpts
+  deriving Show
 
-providers :: Parser Command
-providers =
-  subparser
-    (command "spaces" (info spacesParser (progDesc "Deploy a given --file to Digital Ocean Spaces CDN")) <>
-     metavar "PROVIDER")
+data InstallOpts = InstallOpts
+  { instReinstall :: Bool
+  , instForce :: Bool }
+  deriving Show
 
-deploy :: ParserInfo Command
-deploy = info (providers <**> helper) (progDesc "Issue a deploy command to a PROVIDER")
+data ConfigureOpts = ConfigureOpts
+  { configTests :: Bool
+  , configFlags :: [String] }
+  deriving Show
 
-run :: Command -> IO ()
-run (SpacesDeploy filePath) = putStrLn "Hello,!"
+data BuildOpts = BuildOpts
+  { buildDir :: FilePath }
+  deriving Show
 
-opts :: ParserInfo Command
-opts = info (parser <**> helper) idm
+version :: Parser (a -> a)
+version = infoOption "0.0.0"
+  (  long "version"
+  <> help "Print version information" )
+
+parser :: Parser Args
+parser = runA $ proc () -> do
+  opts <- asA commonOpts -< ()
+  cmds <- (asA . hsubparser)
+            ( command "install"
+              (info installParser
+                    (progDesc "Installs a list of packages"))
+           <> command "update"
+              (info updateParser
+                    (progDesc "Updates list of known packages"))
+           <> command "configure"
+              (info configureParser
+                    (progDesc "Prepare to build the package"))
+           <> command "build"
+              (info buildParser
+                    (progDesc "Make this package ready for installation")) ) -< ()
+  A version >>> A helper -< Args opts cmds
+
+commonOpts :: Parser CommonOpts
+commonOpts = CommonOpts
+  <$> option auto
+      ( short 'v'
+     <> long "verbose"
+     <> metavar "LEVEL"
+     <> help "Set verbosity to LEVEL"
+     <> value 0 )
+
+installParser :: Parser Command
+installParser = runA $ proc () -> do
+  config <- asA configureOpts -< ()
+  inst <- asA installOpts -< ()
+  returnA -< Install config inst
+
+installOpts :: Parser InstallOpts
+installOpts = runA $ proc () -> do
+  reinst <- asA (switch (long "reinstall")) -< ()
+  force <- asA (switch (long "force-reinstall")) -< ()
+  returnA -< InstallOpts
+             { instReinstall = reinst
+             , instForce = force }
+
+updateParser :: Parser Command
+updateParser = pure Update
+
+configureParser :: Parser Command
+configureParser = runA $ proc () -> do
+  config <- asA configureOpts -< ()
+  returnA -< Configure config
+
+configureOpts :: Parser ConfigureOpts
+configureOpts = runA $ proc () -> do
+  tests <- (asA . switch)
+             ( long "enable-tests"
+            <> help "Enable compilation of test suites" ) -< ()
+  flags <- (asA . many . strOption)
+             ( short 'f'
+            <> long "flags"
+            <> metavar "FLAGS"
+            <> help "Enable the given flag" ) -< ()
+  returnA -< ConfigureOpts tests flags
+
+buildParser :: Parser Command
+buildParser = runA $ proc () -> do
+  opts <- asA buildOpts -< ()
+  returnA -< Build opts
+
+buildOpts :: Parser BuildOpts
+buildOpts = runA $ proc () -> do
+  bdir <- (asA . strOption)
+            ( long "builddir"
+           <> metavar "DIR"
+           <> value "dist" ) -< ()
+  returnA -< BuildOpts bdir
+
+pinfo :: ParserInfo Args
+pinfo = info parser
+  ( progDesc "An example modelled on cabal" )
 
 main :: IO ()
-main = execParser opts >>= run
+main = do
+  r <- execParser pinfo
+  print r
