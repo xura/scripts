@@ -1,8 +1,38 @@
-build:
-  stage: build
+image: node:latest
+
+stages:
+  - Build
+  - Deploy
+
+cache:
+  paths:
+    - hermes/node_modules/
+
+Install Dependencies:
+  stage: Build
+  script:
+    - cd hermes
+    - yarn install
+  artifacts:
+    paths:
+      - hermes/node_modules/
+
+Build:
+  stage: Build
+  script:
+    - cd hermes
+    - yarn build
+
+Deploy:
+  stage: Deploy
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
+  only:
+    variables:
+      - $CI_COMMIT_REF_NAME == "master"
+  only:
+    - tags
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$REGISTRY_USER\",\"password\":\"$REGISTRY_PW\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
