@@ -1,14 +1,21 @@
 import * as path from 'path'
 
 const { build } = require('gluegun')
+const fs = require('fs')
 import 'reflect-metadata'
 import { container } from 'tsyringe'
 import Spaces from './adapters/spaces'
 import { cdnMock } from './services/deploy/cdn/cdn.mock'
 
+const envFile = path.resolve(__dirname + '/../.prod.env');
+
+if (!fs.existsSync(envFile)) {
+  throw new Error("You're missing the .prod.env file");
+}
+
 require('dotenv').config({
-  path: path.resolve(__dirname + '/../.prod.env')
-})
+  path: envFile
+});
 
 /**
  * Create the cli and kick it off
@@ -27,6 +34,8 @@ async function run(argv) {
   })()
 
   container.register('ICdnDeploy', injections.ICdnDeploy)
+
+
 
   const cli = build()
     .brand('hermes')
