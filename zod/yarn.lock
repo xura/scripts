@@ -2515,6 +2515,13 @@ tsutils@^3.17.1:
   dependencies:
     tslib "^1.8.1"
 
+tsyringe@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/tsyringe/-/tsyringe-4.0.1.tgz#f657d4f697c553dc69a31948a6c66e94447d8cfe"
+  integrity sha512-Xtn/r3y4fjplogdjiG2buqPBo3/FcXdlUrVWx7JaXpNiwsPG135yEajVfIXVVT1VpnfBYbZ8hjKZer+NJVLTww==
+  dependencies:
+    tslib "^1.9.3"
+
 tunnel-agent@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/tunnel-agent/-/tunnel-agent-0.6.0.tgz#27a5dea06b36b04a0a9966774b290868f0fc40fd"
