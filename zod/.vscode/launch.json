@@ -22,7 +22,7 @@
             "program": "${workspaceFolder}/bin/run",
             "args": [
                 "deploy:clean",
-                "--env=balls"
+                "staging"
             ],
             "cwd": "${workspaceRoot}",
             "console": "integratedTerminal"
