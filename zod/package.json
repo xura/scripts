@@ -2,6 +2,7 @@
   "name": "zod",
   "version": "0.0.0",
   "author": "Joe Badaczewski @joe307bad",
+  "description": "DevOps courtesy of General Dru-Zod",
   "bin": {
     "zod": "./bin/run"
   },
@@ -10,6 +11,9 @@
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/plugin-help": "^2",
+    "aws-sdk": "^2.578.0",
+    "colors": "^1.4.0",
+    "dotenv": "^8.2.0",
     "hard-rejection": "^2.1.0",
     "reflect-metadata": "^0.1.13",
     "tslib": "^1"
@@ -29,7 +33,7 @@
     "nyc": "^14",
     "ts-node": "^8",
     "tsyringe": "^4.0.1",
-    "typescript": "^3.3"
+    "typescript": "3.7"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -54,6 +58,14 @@
     ],
     "hooks": {
       "init": "./lib/hooks/init/init"
+    },
+    "topics": {
+      "deploy": {
+        "description": "manipulate a given remote environment"
+      },
+      "help": {
+        "description": "how do I escape the phantom zone!"
+      }
     }
   },
   "repository": "joe307bad/https://github.com/xura/scripts",

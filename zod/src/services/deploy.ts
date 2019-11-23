@@ -5,11 +5,11 @@ import { ICdn } from '../interfaces/cdn';
 export default class {
     constructor(@inject('ICdn') private cdn?: ICdn) { }
 
-    upload(): Promise<[boolean, string]> {
+    clean(keep: string): Promise<[boolean, string]> {
         if (!this.cdn) {
-            return Promise.resolve([false, "Cdn not injected"]);
+            return Promise.reject([false, 'CDN adapter not injected properly'])
         }
 
-        return this.cdn.upload();
+        return this.cdn.clean(+keep);
     }
 }

@@ -1,3 +1,3 @@
 export interface ICdn {
-    upload(): Promise<[boolean, string]>;
+    clean(keep: number): Promise<[boolean, string]>;
 }
