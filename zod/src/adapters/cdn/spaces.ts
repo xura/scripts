@@ -1,6 +1,7 @@
 import { ICdn } from '../../interfaces/cdn';
 import { autoInjectable } from 'tsyringe';
 import { S3 } from 'aws-sdk';
+import { deleteRecursive } from 's3-commons';
 
 @autoInjectable()
 export default class implements ICdn {
@@ -17,31 +18,29 @@ export default class implements ICdn {
     private _bucketName = process.env.DIGITAL_OCEAN_BUCKET_NAME || '';
 
     async clean(keep: number): Promise<[boolean, string]> {
-        return new Promise((resolve, reject) => {
-
-            this._s3.listObjects({
+        const objectsToDelete =
+            await this._s3.listObjects({
                 Bucket: this._bucketName,
                 Prefix: 'staging/'
-            }, (err, data) => {
-                if (err) {
-                    return reject([false, 'Error listing bucket files']);
-                }
-
-                const deleteObjects = [{ Key: 'staging/data/v0.0.24' }];
-                const deleteObjectsDescriptor = deleteObjects.map(object => object.Key).join(', ');
-
-                this._s3.deleteObjects({
-                    Bucket: this._bucketName,
-                    Delete: {
-                        Objects: deleteObjects
-                    }
-                }, (err: any, data: any) => {
-                    if (err) {
-                        return reject([false, `Error deleting folders ${deleteObjectsDescriptor}`]);
-                    }
-                    return resolve([true, `Deleted folders ${deleteObjectsDescriptor}`])
-                })
             }).promise();
-        });
+
+
+        const deleteObjects = [{ Key: 'staging/data/v0.0.24' }];
+        const deleteObjectsDescriptor =
+            deleteObjects
+                .map(object => object.Key)
+                .join(', ');
+
+        // const count =
+        //     await deleteRecursive(
+        //         this._s3,
+        //         this._bucketName,
+        //         deleteObjects[0].Key
+        //     );
+
+        if (!0)
+            return Promise.reject([false, 'Error deleting deployments']);
+
+        return Promise.resolve([true, `Successfully deleted deployments: ${deleteObjectsDescriptor}`]);
     }
 }

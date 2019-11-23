@@ -31,6 +31,7 @@
     "globby": "^10",
     "mocha": "^5",
     "nyc": "^14",
+    "s3-commons": "^1.0.1",
     "ts-node": "^8",
     "tsyringe": "^4.0.1",
     "typescript": "3.7"
