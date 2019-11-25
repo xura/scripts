@@ -1,8 +1,8 @@
 FROM node:latest
 COPY ./hermes /hermes
-RUN mv /hermes/.env /hermes/.prod.env
-RUN cd /hermes \
+RUN mv /zod/.env.example /hermes/.env
+RUN cd /zod \
  && yarn install \
  && yarn build
 
-ENTRYPOINT ["/hermes/bin/hermes"]
+ENTRYPOINT ["/zod/bin/run"]

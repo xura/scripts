@@ -2,26 +2,33 @@ image: node:latest
 
 stages:
   - Build
+  - Test
   - Deploy
 
 cache:
   paths:
-    - hermes/node_modules/
+    - zod/node_modules/
 
 Install Dependencies:
   stage: Build
   script:
-    - cd hermes
+    - cd zod
     - yarn install
   artifacts:
     paths:
-      - hermes/node_modules/
+      - zod/node_modules/
 
 Build:
   stage: Build
   script:
-    - cd hermes
+    - cd zod
     - yarn build
+
+Test:
+  stage: Test
+  script:
+    - cd zod
+    - yarn test
 
 Deploy:
   stage: Deploy

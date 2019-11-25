@@ -8,7 +8,8 @@
     "**/*.spec.ts",
     "coverage/**",
     "src/index.ts",
-    "src/injections.ts"
+    "src/injections.ts",
+    "src/hooks/init/init.ts"
   ],
   "branches": 80,
   "lines": 80,

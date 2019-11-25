@@ -4,6 +4,15 @@ import { S3 } from 'aws-sdk';
 import { deleteRecursive } from 's3-commons';
 import { IConfig, Environment } from '../../interfaces/config';
 
+export const CDN_ERRORS = {
+    DELETING_MORE_THAN_IS_AVAILABLE: (keep: number, totalDeployments: number) => (`You want to keep ${keep} deployments. There are ${totalDeployments} deployments remaining. Zod will not send any deployments to the phantom zone.`),
+    ERROR_DELETING_DEPLOYMENTS: 'There was an error deleting deployments'
+}
+
+export const CDN_MESSAGES = {
+    SUCCESSFULLY_DELETED_THESE_DEPLOYMENTS: (deleteObjectsDescriptor: string) => `Successfully sent these deployments to the phantom zone: ${deleteObjectsDescriptor}`
+}
+
 @autoInjectable()
 export default class implements ICdn {
     private _bucketName: string;
@@ -55,8 +64,7 @@ export default class implements ICdn {
         const totalDeployments = currentDeploymentsOnEnvironment.size;
 
         if (totalDeployments <= keep)
-            return Promise.reject([false, `You want to keep ${keep} deployments. There are ${totalDeployments} deployments remaining. Zod will not send any deployments to the phantom zone.`])
-
+            return Promise.reject([false, CDN_ERRORS.DELETING_MORE_THAN_IS_AVAILABLE(keep, totalDeployments)])
 
         const sortedDeployments = this._sortMapByDatePropertyValue(
             currentDeploymentsOnEnvironment
@@ -84,8 +92,8 @@ export default class implements ICdn {
             }, Promise.resolve(0));
 
         if (!deletedCount)
-            return Promise.reject([false, 'Error deleting deployments']);
+            return Promise.reject([false, CDN_ERRORS.ERROR_DELETING_DEPLOYMENTS]);
 
-        return Promise.resolve([true, `Successfully sent these deployments to the phantom zone: ${deleteObjectsDescriptor}`]);
+        return Promise.resolve([true, CDN_MESSAGES.SUCCESSFULLY_DELETED_THESE_DEPLOYMENTS(deleteObjectsDescriptor)]);
     }
 }
