@@ -24,9 +24,8 @@ export default class implements ICdn {
         }
     });
 
-    private _deploymentTag = (releasePath: string): string => {
-        return (releasePath.match(/(v)(\d+\.)(\d+\.)(\d+)/g) || [])[0] || '';
-    }
+    private _deploymentTag = (releasePath: string): string =>
+        (releasePath.match(/(v)(\d+\.)(\d+\.)(\d+)/g) || [])[0] || ''
 
     private _sortMapByDatePropertyValue = (map: Map<string, Date>) =>
         new Map([...map.entries()].sort((a, b) => a[1].getTime() - b[1].getTime()));
@@ -41,7 +40,7 @@ export default class implements ICdn {
             }).promise()).Contents || []);
 
         const currentDeploymentsOnEnvironment =
-            (allObjectsUnderReleasePath || [])
+            allObjectsUnderReleasePath
                 .reduce((acc: Map<string, Date>, object) => {
                     if (!object.Key || !object.LastModified)
                         return acc;
