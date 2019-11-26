@@ -22,7 +22,7 @@ Build:
   stage: Build
   script:
     - cd zod
-    - yarn build
+    - tsc
 
 Test:
   stage: Test

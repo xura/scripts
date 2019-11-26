@@ -9,6 +9,6 @@ export type ConfigKey =
 
 export type Environment = 'staging' | 'production';
 
-export interface IConfig {
+export interface Config {
     get(key: ConfigKey): string;
 }
