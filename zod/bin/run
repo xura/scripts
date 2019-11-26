@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-require('reflect-metadata');
 require('hard-rejection/register');
 require('@oclif/command').run()
     .then(require('@oclif/command/flush'))

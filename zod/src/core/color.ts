@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import colors from 'colors'
 
 export function success(message: string) {

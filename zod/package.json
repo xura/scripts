@@ -6,17 +6,17 @@
   "bin": {
     "zod": "./bin/run"
   },
-  "bugs": "https://github.com/joe307bad/https://github.com/xura/scripts/issues",
+  "bugs": "https://github.com/xura/scripts/issues",
   "dependencies": {
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/plugin-help": "^2",
-    "aws-sdk": "^2.578.0",
     "colors": "^1.4.0",
     "dotenv": "^8.2.0",
     "hard-rejection": "^2.1.0",
     "reflect-metadata": "^0.1.13",
-    "tslib": "^1"
+    "tslib": "^1",
+    "tsyringe": "^4.0.1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
@@ -26,6 +26,7 @@
     "@types/lodash": "^4.14.149",
     "@types/mocha": "^5.2.7",
     "@types/node": "^10",
+    "aws-sdk": "^2.579.0",
     "aws-sdk-mock": "^4.5.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
@@ -42,7 +43,6 @@
     "sinon": "^7.5.0",
     "sync-dotenv": "^2.3.0",
     "ts-node": "^8",
-    "tsyringe": "^4.0.1",
     "typescript": "3.7"
   },
   "engines": {
@@ -54,7 +54,7 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/joe307bad/https://github.com/xura/scripts",
+  "homepage": "https://github.com/joe307bad/xura/scripts",
   "keywords": [
     "oclif"
   ],
@@ -69,6 +69,11 @@
     "hooks": {
       "init": "./lib/hooks/init/init"
     },
+    "update": {
+      "s3": {
+        "bucket": "xura-cdn"
+      }
+    },
     "topics": {
       "deploy": {
         "description": "manipulate a given remote environment"
@@ -78,7 +83,7 @@
       }
     }
   },
-  "repository": "joe307bad/https://github.com/xura/scripts",
+  "repository": "https://github.com/xura/scripts",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",

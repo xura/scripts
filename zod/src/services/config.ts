@@ -1,4 +1,5 @@
-import {Config, ConfigKey} from '../interfaces/config'
+import 'reflect-metadata';
+import { Config, ConfigKey } from '../interfaces/config'
 
 export default class implements Config {
   get(key: ConfigKey): string {
