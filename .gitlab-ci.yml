@@ -28,6 +28,7 @@ Test:
   stage: Test
   script:
     - cd zod
+    - mv .env.example .env
     - yarn test
 
 Deploy:
