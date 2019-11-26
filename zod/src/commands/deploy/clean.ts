@@ -21,7 +21,7 @@ export default class Clean extends Command {
   },
   {
     name: 'keep',
-    default: '3',
+    default: '1',
     description: 'keep this many deployments sorted by deployment date (last modified)',
   }]
 

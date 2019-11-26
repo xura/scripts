@@ -34,7 +34,7 @@
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--grep",
-                "calls deleteRecursive the proper amount of times and with the proper arguments"
+                "calls _s3.listObjects with bucket and prefix"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
