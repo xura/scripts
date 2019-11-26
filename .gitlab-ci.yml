@@ -22,7 +22,7 @@ Build:
   stage: Build
   script:
     - cd zod
-    - tsc
+    - ./node_modules/typescript/bin/tsc
 
 Test:
   stage: Test
