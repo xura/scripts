@@ -1,4 +1,4 @@
-import 'reflect-metadata';
+import 'reflect-metadata'
 export type ConfigKey =
     'DIGITAL_OCEAN_ACCESS_KEY_ID'
     | 'DIGITAL_OCEAN_SECRET_ACCESS_KEY'

@@ -1,9 +1,9 @@
-import 'reflect-metadata';
-import { Cdn } from '../../interfaces/cdn'
-import { autoInjectable, inject } from 'tsyringe'
-import { S3 } from 'aws-sdk'
-import { deleteRecursive } from 's3-commons'
-import { Config, Environment } from '../../interfaces/config'
+import 'reflect-metadata'
+import {Cdn} from '../../interfaces/cdn'
+import {autoInjectable, inject} from 'tsyringe'
+import {S3} from 'aws-sdk'
+import {deleteRecursive} from 's3-commons'
+import {Config, Environment} from '../../interfaces/config'
 
 export const CDN_ERRORS = {
   DELETING_MORE_THAN_IS_AVAILABLE: (keep: number, totalDeployments: number) => (`You want to keep ${keep} deployments. There are ${totalDeployments} deployments remaining. Zod will not send any deployments to the phantom zone.`),
@@ -52,16 +52,16 @@ export default class implements Cdn {
 
     const currentDeploymentsOnEnvironment =
       allObjectsUnderReleasePath
-        .reduce((acc: Map<string, Date>, object) => {
-          if (!object.Key || !object.LastModified)
-            return acc
-
-          const deploymentTag = this._deploymentTag(object.Key)
-          if (deploymentTag)
-            return acc.set(deploymentTag, object.LastModified)
-
+      .reduce((acc: Map<string, Date>, object) => {
+        if (!object.Key || !object.LastModified)
           return acc
-        }, new Map())
+
+        const deploymentTag = this._deploymentTag(object.Key)
+        if (deploymentTag)
+          return acc.set(deploymentTag, object.LastModified)
+
+        return acc
+      }, new Map())
 
     const totalDeployments = currentDeploymentsOnEnvironment.size
 
@@ -74,24 +74,24 @@ export default class implements Cdn {
 
     const deploymentsToDelete =
       [...sortedDeployments.entries()]
-        .slice(0, sortedDeployments.size - keep)
-        .map(deployment => `${releasePath}${deployment[0]}`)
+      .slice(0, sortedDeployments.size - keep)
+      .map(deployment => `${releasePath}${deployment[0]}`)
 
     const deleteObjectsDescriptor =
       deploymentsToDelete
-        .map(deployment => deployment)
-        .join(', ')
+      .map(deployment => deployment)
+      .join(', ')
 
     const deletedCount = await deploymentsToDelete
-      .reduce(async (acc, deploymentPath) => {
-        const accumulator = await acc
-        const totalDeletedForReleasePath = await deleteRecursive(
-          this._s3,
-          this._bucketName,
-          deploymentPath,
-        )
-        return Promise.resolve(accumulator + totalDeletedForReleasePath)
-      }, Promise.resolve(0))
+    .reduce(async (acc, deploymentPath) => {
+      const accumulator = await acc
+      const totalDeletedForReleasePath = await deleteRecursive(
+        this._s3,
+        this._bucketName,
+        deploymentPath,
+      )
+      return Promise.resolve(accumulator + totalDeletedForReleasePath)
+    }, Promise.resolve(0))
 
     if (!deletedCount)
       return Promise.reject([false, CDN_ERRORS.ERROR_DELETING_DEPLOYMENTS])

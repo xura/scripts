@@ -3,7 +3,7 @@ import sinon from 'sinon'
 import AWSMock from 'aws-sdk-mock'
 import cap from 'chai-as-promised'
 import moment from 'moment'
-import AWS from 'aws-sdk';
+import AWS from 'aws-sdk'
 import * as s3Commons from 's3-commons'
 import chai, { expect } from 'chai'
 
@@ -45,7 +45,7 @@ describe('Spaces adapter', () => {
 
   it('calls _s3.listObjects with bucket and prefix', function () {
     // arrange
-    sandbox.stub(AWS, 'S3').returns({});
+    AWSMock.setSDKInstance(AWS)
     const listObjects = sandbox.stub().resolves({ Contents: [] })
     AWSMock.mock('S3', 'listObjects', listObjects)
     configStub.withArgs(sinon.match.any).returns('ENV_VAR')
@@ -56,7 +56,9 @@ describe('Spaces adapter', () => {
     spacesAdapter.clean(3, 'staging').catch(error => error)
 
     // assert
-    sandbox.assert.called(listObjects)
+    sandbox.assert.called(listObjects);
+
+    AWSMock.restore('listObjects');
   })
 
   it('calls deleteRecursive the proper amount of times and with the proper arguments', async function () {
@@ -81,6 +83,8 @@ describe('Spaces adapter', () => {
     expect(success[1]).to.eq(CDN_MESSAGES.SUCCESSFULLY_DELETED_THESE_DEPLOYMENTS(
       expectedDeploymentTags.join(', '),
     ))
+
+    AWSMock.restore('listObjects');
   })
 
   it('rejects with an error message if deleteRecursive returns 0', async function () {
@@ -100,6 +104,8 @@ describe('Spaces adapter', () => {
     await expect(spacesAdapter.clean(3, 'staging')).to.eventually.to.be.rejected.then(error => {
       expect(error[1]).to.equal(expectedError)
     })
+
+    AWSMock.restore('listObjects');
   })
 
   it('rejects with an error message if total current deployments is <= keep argument', async function () {
@@ -116,5 +122,7 @@ describe('Spaces adapter', () => {
     await expect(spacesAdapter.clean(keep, 'staging')).to.eventually.be.rejected.then(error => {
       expect(error[1]).to.equal(expectedError)
     })
+
+    AWSMock.restore('listObjects');
   })
 })

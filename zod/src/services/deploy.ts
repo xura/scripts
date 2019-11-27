@@ -1,7 +1,7 @@
-import 'reflect-metadata';
-import { autoInjectable, inject } from 'tsyringe'
-import { Cdn } from '../interfaces/cdn'
-import { Environment } from '../interfaces/config'
+import 'reflect-metadata'
+import {autoInjectable, inject} from 'tsyringe'
+import {Cdn} from '../interfaces/cdn'
+import {Environment} from '../interfaces/config'
 
 export const DEPLOY_ERRORS = {
   PROPERTY_NOT_INJECTED: (property: string) => (`${property} adapter not injected properly`),
