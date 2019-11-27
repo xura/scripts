@@ -1,4 +1,4 @@
-image: node:latest
+image: timbru31/ruby-node
 
 stages:
   - Build
@@ -18,50 +18,48 @@ Install Dependencies:
     paths:
       - zod/node_modules/
 
-Build:
-  stage: Build
-  script:
-    - cd zod
-    - ./node_modules/typescript/bin/tsc
+# Build:
+#   stage: Build
+#   script:
+#     - cd zod
+#     - ./node_modules/typescript/bin/tsc
 
-Test:
-  stage: Test
-  script:
-    - cd zod
-    - mv .env.example .env
-    - yarn test
+# Test:
+#   stage: Test
+#   script:
+#     - cd zod
+#     - mv .env.example .env
+#     - yarn test
 
 Upload tarbells:
   stage: Deploy
-  image:
-    name: ubuntu:latest
-  only:
-    variables:
-      - $CI_COMMIT_REF_NAME == "master"
-  only:
-    - tags
+#   only:
+#     variables:
+#       - $CI_COMMIT_REF_NAME == "master"
+#   only:
+#     - tags
   script:
     - cd zod
+    - apt-get update
+    - apt-get install rename -y
     - yarn global add @oclif/dev-cli
     - oclif-dev pack --no-xz --targets=
-    - mv ./dist/zod* zod
-    - apt-get update
-    - apt-get install rename
+    - mv ./dist/zod* ./dist/zod
     - cd ./dist/zod
-    - find . -name 'zod*' | sort -r | xargs rename 's/zod-(v)(\d+\.)(\d+\.)(\d+).*/zod/gi' * \;
+    - rename 's/zod-(v)(\d+\.)(\d+\.)(\d+)/zod/gi' *.tar.gz
     - gem install dpl
-    - dpl --skip_cleanup --provider=s3 --access_key_id=$DIGITAL_OCEAN_ACCESS_KEY_ID --secret_access_key=$DIGITAL_OCEAN_SECRET_ACCESS_KEY --bucket=xura-cdn --region=sfo2 --endpoint=https://sfo2.digitaloceanspaces.com --local_dir=./dist/zod --upload_dir=zod --acl=public_read
+    - dpl --skip_cleanup --provider=s3 --access_key_id=$DIGITAL_OCEAN_ACCESS_KEY_ID --secret_access_key=$DIGITAL_OCEAN_SECRET_ACCESS_KEY --bucket=xura-cdn --region=sfo2 --endpoint=https://sfo2.digitaloceanspaces.com --local_dir=./ --upload_dir=zod --acl=public_read
 
 Build Docker Image:
   stage: Deploy
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
-  only:
-    variables:
-      - $CI_COMMIT_REF_NAME == "master"
-  only:
-    - tags
+#   only:
+#     variables:
+#       - $CI_COMMIT_REF_NAME == "master"
+#   only:
+#     - tags
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$REGISTRY_USER\",\"password\":\"$REGISTRY_PW\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
