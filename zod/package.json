@@ -1,0 +1,102 @@
+{
+  "name": "zod",
+  "version": "0.0.0",
+  "author": "Joe Badaczewski @joe307bad",
+  "description": "DevOps courtesy of General Dru-Zod",
+  "bin": {
+    "zod": "./bin/run"
+  },
+  "bugs": "https://github.com/xura/scripts/issues",
+  "dependencies": {
+    "@oclif/command": "^1",
+    "@oclif/config": "^1",
+    "@oclif/plugin-help": "^2",
+    "aws-sdk": "^2.580.0",
+    "colors": "^1.4.0",
+    "dotenv": "^8.2.0",
+    "hard-rejection": "^2.1.0",
+    "reflect-metadata": "^0.1.13",
+    "tslib": "^1",
+    "tsyringe": "^4.0.1"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1",
+    "@oclif/test": "^1",
+    "@types/chai": "^4.2.5",
+    "@types/chai-as-promised": "^7.1.2",
+    "@types/lodash": "^4.14.149",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^10",
+    "aws-sdk-mock": "^4.5.0",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^5.13",
+    "eslint-config-oclif": "^3.1",
+    "eslint-config-oclif-typescript": "^0.1",
+    "globby": "^10",
+    "husky": "^3.1.0",
+    "lodash": "^4.17.15",
+    "mocha": "^6.2.2",
+    "moment": "^2.24.0",
+    "nyc": "^14.1.1",
+    "s3-commons": "^1.0.1",
+    "sinon": "^7.5.0",
+    "sync-dotenv": "^2.3.0",
+    "ts-node": "^8",
+    "typescript": "3.7"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/joe307bad/xura/scripts",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "zod",
+    "plugins": [
+      "@oclif/plugin-help"
+    ],
+    "hooks": {
+      "init": "./lib/hooks/init/init"
+    },
+    "update": {
+      "s3": {
+        "bucket": "xura-cdn"
+      }
+    },
+    "topics": {
+      "deploy": {
+        "description": "manipulate a given remote environment"
+      },
+      "help": {
+        "description": "how do I escape the phantom zone!"
+      }
+    }
+  },
+  "repository": "https://github.com/xura/scripts",
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" && eslint . --ext .ts --config .eslintrc --fix",
+    "lint": "eslint . --ext .ts --config .eslintrc --fix",
+    "version": "oclif-dev readme && git add README.md",
+    "env": "sync-dotenv"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn run env"
+    }
+  },
+  "types": "lib/index.d.ts"
+}

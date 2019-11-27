@@ -2,28 +2,57 @@ image: node:latest
 
 stages:
   - Build
+  - Test
   - Deploy
 
 cache:
   paths:
-    - hermes/node_modules/
+    - zod/node_modules/
 
 Install Dependencies:
   stage: Build
   script:
-    - cd hermes
+    - cd zod
     - yarn install
   artifacts:
     paths:
-      - hermes/node_modules/
+      - zod/node_modules/
 
 Build:
   stage: Build
   script:
-    - cd hermes
-    - yarn build
+    - cd zod
+    - ./node_modules/typescript/bin/tsc
 
-Deploy:
+Test:
+  stage: Test
+  script:
+    - cd zod
+    - mv .env.example .env
+    - yarn test
+
+Upload tarbells:
+  stage: Deploy
+  image:
+    name: ubuntu:latest
+  only:
+    variables:
+      - $CI_COMMIT_REF_NAME == "master"
+  only:
+    - tags
+  script:
+    - cd zod
+    - yarn global add @oclif/dev-cli
+    - oclif-dev pack --no-xz --targets=
+    - mv ./dist/zod* zod
+    - apt-get update
+    - apt-get install rename
+    - cd ./dist/zod
+    - find . -name 'zod*' | sort -r | xargs rename 's/zod-(v)(\d+\.)(\d+\.)(\d+).*/zod/gi' * \;
+    - gem install dpl
+    - dpl --skip_cleanup --provider=s3 --access_key_id=$DIGITAL_OCEAN_ACCESS_KEY_ID --secret_access_key=$DIGITAL_OCEAN_SECRET_ACCESS_KEY --bucket=xura-cdn --region=sfo2 --endpoint=https://sfo2.digitaloceanspaces.com --local_dir=./dist/zod --upload_dir=zod --acl=public_read
+
+Build Docker Image:
   stage: Deploy
   image:
     name: gcr.io/kaniko-project/executor:debug

@@ -1,8 +1,5 @@
 FROM node:latest
-COPY ./hermes /hermes
-RUN mv /hermes/.env /hermes/.prod.env
-RUN cd /hermes \
- && yarn install \
- && yarn build
-
-ENTRYPOINT ["/hermes/bin/hermes"]
+ADD https://cdn.xura.io/zod/zod.tar.gz ./
+RUN tar -xzf ./zod.tar.gz
+COPY ./zod/.env.example ./zod/.env
+ENTRYPOINT ['/zod/bin/zod']

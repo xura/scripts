@@ -1,0 +1,29 @@
+{
+  "extends": "@istanbuljs/nyc-config-typescript",
+  "all": true,
+  "exclude": [
+    "bridge/**",
+    "solo/**",
+    "**/*.d.ts",
+    "**/*.spec.ts",
+    "coverage/**",
+    "src/index.ts",
+    "src/injections.ts",
+    "src/hooks/init/init.ts"
+  ],
+  "branches": 80,
+  "lines": 80,
+  "functions": 80,
+  "statements": 80,
+  "check-coverage": true,
+  "cache": false,
+  "extension": [
+    ".ts"
+  ],
+  "require": [
+    "ts-node/register"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ]
+}
