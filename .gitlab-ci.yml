@@ -14,30 +14,27 @@ Install Dependencies:
   script:
     - cd zod
     - yarn install
-  artifacts:
-    paths:
-      - zod/node_modules/
+    
+Build:
+  stage: Build
+  script:
+    - cd zod
+    - ./node_modules/typescript/bin/tsc
 
-# Build:
-#   stage: Build
-#   script:
-#     - cd zod
-#     - ./node_modules/typescript/bin/tsc
-
-# Test:
-#   stage: Test
-#   script:
-#     - cd zod
-#     - mv .env.example .env
-#     - yarn test
+Test:
+  stage: Test
+  script:
+    - cd zod
+    - mv .env.example .env
+    - yarn test
 
 Upload tarbells:
   stage: Deploy
-#   only:
-#     variables:
-#       - $CI_COMMIT_REF_NAME == "master"
-#   only:
-#     - tags
+  only:
+    variables:
+      - $CI_COMMIT_REF_NAME == "master"
+  only:
+    - tags
   script:
     - cd zod
     - apt-get update
@@ -55,11 +52,11 @@ Build Docker Image:
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
-#   only:
-#     variables:
-#       - $CI_COMMIT_REF_NAME == "master"
-#   only:
-#     - tags
+  only:
+    variables:
+      - $CI_COMMIT_REF_NAME == "master"
+  only:
+    - tags
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$REGISTRY_USER\",\"password\":\"$REGISTRY_PW\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
