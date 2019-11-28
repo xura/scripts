@@ -44,7 +44,7 @@ Upload tarbells:
     - mv ./dist/zod* ./dist/zod
     - cd ./dist/zod
     - rename 's/zod-(v)(\d+\.)(\d+\.)(\d+)/zod/gi' *.tar.gz
-    - mv ../../env.example ./.env
+    - mv ../../.env.example ./.env
     - gem install dpl
     - dpl --skip_cleanup --provider=s3 --access_key_id=$DIGITAL_OCEAN_ACCESS_KEY_ID --secret_access_key=$DIGITAL_OCEAN_SECRET_ACCESS_KEY --bucket=xura-cdn --region=sfo2 --endpoint=https://sfo2.digitaloceanspaces.com --local_dir=./ --upload_dir=zod --acl=public_read
 
