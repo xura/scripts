@@ -8,6 +8,7 @@ stages:
 cache:
   paths:
     - zod/node_modules/
+    - zod/dist
 
 Install Dependencies:
   stage: Build
@@ -33,17 +34,16 @@ Upload tarbells:
   only:
     variables:
       - $CI_COMMIT_REF_NAME == "master"
-  only:
-    - tags
+  # only:
+  #   - tags
   script:
     - cd zod
-    - mkdir -p dist/zod/
     - apt-get update
     - apt-get install rename -y
     - yarn global add @oclif/dev-cli
     - oclif-dev pack --no-xz --targets=
-    - mv dist/zod* dist/zod
-    - mv .env.example dist/zod/.env
+    - mv ./dist/zod* ./dist/zod
+    - mv ./.env.example ./dist/zod/.env
     - cd dist/zod
     - rename 's/zod-(v)(\d+\.)(\d+\.)(\d+)/zod/gi' *.tar.gz
     - gem install dpl
