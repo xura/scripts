@@ -1,0 +1,11 @@
+---
+# xura playbook
+- hosts: web
+  user: rancher
+  become: sudo
+  vars:
+    # # ttt variables
+    # ttt_vhost: "{{hostvars[inventory_hostname]['ttt_vhost']}}"
+    # ttt_dir: "{{hostvars[inventory_hostname]['jbhs_mount']}}/Library/Sites/ttt"
+  roles:
+    - { role: single-page-app, tags: 'spa' }

@@ -2,6 +2,8 @@ import 'reflect-metadata'
 import { autoInjectable, inject } from 'tsyringe'
 import { Cdn } from '../interfaces/cdn'
 import { Environment } from '../interfaces/config'
+import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js';
+import path from 'path';
 
 export const DEPLOY_ERRORS = {
   PROPERTY_NOT_INJECTED: (property: string) => (`${property} adapter not injected properly`),
@@ -19,7 +21,7 @@ export default class {
     return this.cdn.clean(Number(keep), env)
   }
 
-  createStagingUrl(tag: string): Promise<[boolean, string]> {
+  async createStagingUrl(tag: string): Promise<[boolean, string]> {
 
     // TODOs
     // create container on staging server
@@ -29,6 +31,14 @@ export default class {
     // TODOs
     // create docker service
     // create service that pings a url until its reachable
+
+    const ansibleDir = path.resolve(path.join(__dirname, '../core/ansible'))
+    const options = new Options(ansibleDir);
+
+    const ansiblePlaybook = new AnsiblePlaybook(options);
+
+    const data = await ansiblePlaybook.command('create-staging-url.yml -i xura');
+
 
     return Promise.resolve([true, 'Staging URL created']);
   }

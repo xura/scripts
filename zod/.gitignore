@@ -5,5 +5,7 @@
 /lib
 /package-lock.json
 /tmp
+/src/core/ansible/droplet4
+/src/core/ansible/xura
 node_modules
 .env

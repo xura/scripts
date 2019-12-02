@@ -18,11 +18,11 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "zod deploy:clean",
+            "name": "zod deploy:create-staging-url",
             "program": "${workspaceFolder}/bin/run",
             "args": [
-                "deploy:clean",
-                "staging"
+                "deploy:create-staging-url",
+                "v0.0.24"
             ],
             "cwd": "${workspaceRoot}",
             "console": "integratedTerminal"
