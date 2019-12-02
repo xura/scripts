@@ -28,7 +28,9 @@ export default class {
     // [ ] ping staging URL until it is reachable
     // [ ] output new staging url to console
 
-    const container = await this.docker.createSpaContainer(tag.replace(/./g, ''));
+    const container = await this.docker.createSpaContainer(
+      tag.replace(/./g, '')
+    );
 
     return Promise.resolve([true, 'Staging URL created']);
   }
