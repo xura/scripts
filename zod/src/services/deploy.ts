@@ -30,13 +30,16 @@ export default class {
 
     // TODOs
     // [X] devise way of creating a single page app container on xura.io
-    // [ ] set correct settings for newly created SPA container:
+    // [ ] develop command to create spa container:
     //      [X] upload single index.html file (path/github link passed in through args)
     //      [X] set correct subdomain and lets-encrypt domain
     //      [X] set correct docker network
     //      [ ] ensure certs are being created, do we need DNS integration?
     // [ ] ping staging URL until it is reachable
-    // [ ] develop command to remove spa container
+    // [ ] develop command to remove spa container:
+    //      [ ] Remove staging htdocs for version
+    //      [ ] Remove container isntance
+    //      [ ] Remove certs from nginx/certs folder
     // [ ] output new staging url to console
 
     return this._docker.createSpaContainer(tag);
