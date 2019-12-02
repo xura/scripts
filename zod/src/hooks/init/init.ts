@@ -1,9 +1,10 @@
 import 'reflect-metadata'
 
+import Ansible from '../../adapters/docker/ansible'
 import Spaces from '../../adapters/cdn/spaces'
-import Config from '../../services/config'
-import {container} from 'tsyringe'
-import {Hook} from '@oclif/config'
+import Config from '../../adapters/config'
+import { container } from 'tsyringe'
+import { Hook } from '@oclif/config'
 
 const fs = require('fs')
 const path = require('path')
@@ -21,6 +22,7 @@ require('dotenv').config({
 const hook: Hook<'init'> = function () {
   container.register('Config', Config)
   container.register('Cdn', Spaces)
+  container.register('Docker', Ansible)
 }
 
 export default hook

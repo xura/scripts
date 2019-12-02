@@ -2,8 +2,7 @@ import 'reflect-metadata'
 import { autoInjectable, inject } from 'tsyringe'
 import { Cdn } from '../interfaces/cdn'
 import { Environment } from '../interfaces/config'
-import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js';
-import path from 'path';
+import { Docker } from '../interfaces/docker';
 
 export const DEPLOY_ERRORS = {
   PROPERTY_NOT_INJECTED: (property: string) => (`${property} adapter not injected properly`),
@@ -11,34 +10,25 @@ export const DEPLOY_ERRORS = {
 
 @autoInjectable()
 export default class {
-  constructor(@inject('Cdn') private cdn?: Cdn) { }
+  constructor(
+    @inject('Cdn') private cdn: Cdn,
+    @inject('Docker') private docker: Docker
+  ) { }
 
-  clean(keep: string, env: Environment): Promise<[boolean, string]> {
-    if (!this.cdn) {
-      return Promise.reject([false, DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('cdn')])
-    }
-
-    return this.cdn.clean(Number(keep), env)
-  }
+  clean = (keep: string, env: Environment): Promise<[boolean, string]> => this.cdn.clean(Number(keep), env)
 
   async createStagingUrl(tag: string): Promise<[boolean, string]> {
 
     // TODOs
-    // create container on staging server
-    // ping staging URL until it is reachable
-    // build link to 
+    // [X] devise way of creating a single page app container on xura.io
+    // [ ] set correct settings for newly created SPA container:
+    //      [ ] upload single index.html file (path/github link passed in through args)
+    //      [ ] set correct subdomain and lets-encrypt domain
+    //      [ ] set correct docker network
+    // [ ] ping staging URL until it is reachable
+    // [ ] output new staging url to console
 
-    // TODOs
-    // create docker service
-    // create service that pings a url until its reachable
-
-    const ansibleDir = path.resolve(path.join(__dirname, '../core/ansible'))
-    const options = new Options(ansibleDir);
-
-    const ansiblePlaybook = new AnsiblePlaybook(options);
-
-    const data = await ansiblePlaybook.command('create-staging-url.yml -i xura');
-
+    const container = await this.docker.createSpaContainer(tag.replace(/./g, ''));
 
     return Promise.resolve([true, 'Staging URL created']);
   }
