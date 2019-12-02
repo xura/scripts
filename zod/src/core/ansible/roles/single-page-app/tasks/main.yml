@@ -1,19 +1,29 @@
+- name: Create {{stagingHtdocs}}
+  file:
+    path: "{{stagingHtdocs}}"
+    state: directory
+
+- name: Download SPA index.html file for project
+  get_url:
+    url: "{{indexHtmlCdnUrl}}"
+    dest: "{{stagingHtdocs}}"
+
 - name: Single Page App Container UP
   docker_container:
-    name: xura-staging
+    name: "{{containerName}}"
     image: httpd:alpine
     state: started
     restart_policy: always
     restart: yes
-    # env:
-    #   LETSENCRYPT_HOST: "{{ttt_vhost}}"
-    #   LETSENCRYPT_EMAIL: joe307bad@gmail.com
-    #   VIRTUAL_HOST: "{{ttt_vhost}}"
+    env:
+      LETSENCRYPT_HOST: "{{containerName}}"
+      LETSENCRYPT_EMAIL: joe307bad@gmail.com
+      VIRTUAL_HOST: "{{containerName}}"
     expose:
       - 80
     volumes:
-      # - "{{ttt_dir}}/dist:/usr/local/apache2/htdocs/"
-    # networks:
-    #   - name: "{{nginx_network}}"
-    # network_mode: bridge
+      - "{{stagingHtdocs}}:/usr/local/apache2/htdocs"
+    networks:
+      - name: "{{network}}"
+    network_mode: bridge
   tags: spa-container

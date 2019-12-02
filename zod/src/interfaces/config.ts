@@ -6,7 +6,9 @@ export type ConfigKey =
     | 'DIGITAL_OCEAN_ENDPOINT'
     | 'DIGITAL_OCEAN_REGION'
     | 'PROJECT'
-    | 'NODE_ENV';
+    | 'NODE_ENV'
+    | 'STAGING_HTDOCS'
+    | 'STAGING_DOCKER_NETWORK';
 
 export type Environment = 'staging' | 'production';
 
