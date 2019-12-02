@@ -4,6 +4,10 @@ import path from 'path';
 import { inject, autoInjectable } from 'tsyringe';
 import { Config } from '../../interfaces/config';
 
+const ANSIBLE_MESSAGES = {
+    STAGING_URL_CREATED: (stagingUrl: string) => `A staging URL has been created at ${stagingUrl}`
+}
+
 @autoInjectable()
 export default class implements Docker {
 
@@ -28,7 +32,8 @@ export default class implements Docker {
         });
         const command = `create-staging-url.yml -i xura --extra-vars '${ansibleExtraVars}'`;
 
-        const playbookResponse = await this._playbook.command(command)
-        return Promise.resolve([true, playbookResponse])
+        await this._playbook.command(command);
+
+        return Promise.resolve([true, ANSIBLE_MESSAGES.STAGING_URL_CREATED(containerName)])
     }
 }

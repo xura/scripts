@@ -26,7 +26,7 @@ export default class CreateStagingUrl extends Command {
         await new Deploy()
             .createStagingUrl(args.tag)
             .then(response => this.log(success(response[1])))
-            .catch(error => this.log(err(error[1])))
+            .catch(error => this.log(err(error[1] ? error[1] : error.toString())))
     }
 }
 

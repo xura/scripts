@@ -15,7 +15,7 @@ export default class {
     @inject('Docker') private _docker?: Docker
   ) { }
 
-  clean = (keep: string, env: Environment): Promise<[boolean, string]> => {
+  clean(keep: string, env: Environment): Promise<[boolean, string]> {
     if (!this._cdn) {
       return Promise.reject([false, DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('cdn')])
     }
@@ -39,8 +39,6 @@ export default class {
     // [ ] develop command to remove spa container
     // [ ] output new staging url to console
 
-    const container = await this._docker.createSpaContainer(tag);
-
-    return Promise.resolve([true, 'Staging URL created']);
+    return this._docker.createSpaContainer(tag);
   }
 }
