@@ -22,7 +22,7 @@
             "program": "${workspaceFolder}/bin/run",
             "args": [
                 "deploy:create-staging-url",
-                "v0.0.27"
+                "v0.0.28"
             ],
             "cwd": "${workspaceRoot}",
             "console": "integratedTerminal"

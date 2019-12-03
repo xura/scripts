@@ -8,3 +8,7 @@ export function success(message: string) {
 export function error(message: string) {
   return colors.bold(colors.red(message))
 }
+
+export function warn(message: string) {
+  return colors.bold(colors.yellow(message))
+}

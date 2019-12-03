@@ -22,9 +22,11 @@ export default class CreateStagingUrl extends Command {
 
     async run() {
         const { args } = this.parse(CreateStagingUrl)
+        const deployer = new Deploy();
 
-        await new Deploy()
+        await deployer
             .createStagingUrl(args.tag)
+            .then(([success, stagingUrl]) => deployer.ping(stagingUrl))
             .then(response => this.log(success(response[1])))
             .catch(error => this.log(err(error[1] ? error[1] : error.toString())))
     }

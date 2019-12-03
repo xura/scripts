@@ -3,6 +3,7 @@ import 'reflect-metadata'
 import Ansible from '../../adapters/docker/ansible'
 import Spaces from '../../adapters/cdn/spaces'
 import Config from '../../adapters/config'
+import Ping from '../../adapters/ping';
 import { container } from 'tsyringe'
 import { Hook } from '@oclif/config'
 
@@ -23,6 +24,7 @@ const hook: Hook<'init'> = function () {
   container.register('Config', Config)
   container.register('Cdn', Spaces)
   container.register('Docker', Ansible)
+  container.register('Ping', Ping)
 }
 
 export default hook
