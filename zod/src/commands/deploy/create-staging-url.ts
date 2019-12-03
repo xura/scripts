@@ -1,7 +1,8 @@
 import 'reflect-metadata'
 import { Command, flags } from '@oclif/command'
 import Deploy from '../../services/deploy'
-import { success, error as err } from '../../core/color'
+import { success, error as err, blue } from '../../core/color'
+import terminalLink from 'terminal-link';
 
 export default class CreateStagingUrl extends Command {
     static description = 'spin up a staging URL for a given tag'
@@ -27,7 +28,7 @@ export default class CreateStagingUrl extends Command {
         await deployer
             .createStagingUrl(args.tag)
             .then(([success, stagingUrl]) => deployer.ping(stagingUrl))
-            .then(response => this.log(success(response[1])))
+            .then(([success, stagingUrl]) => this.log(blue(terminalLink(args.tag, stagingUrl))))
             .catch(error => this.log(err(error[1] ? error[1] : error.toString())))
     }
 }

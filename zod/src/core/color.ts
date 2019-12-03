@@ -12,3 +12,7 @@ export function error(message: string) {
 export function warn(message: string) {
   return colors.bold(colors.yellow(message))
 }
+
+export function blue(message: string) {
+  return colors.bold(colors.blue(message))
+}
