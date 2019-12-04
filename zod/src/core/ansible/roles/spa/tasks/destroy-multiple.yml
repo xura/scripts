@@ -1,0 +1,18 @@
+- name: Destroy SPA Container
+  docker_container:
+    name: "{{item}}"
+    state: absent
+  with_items:
+  - "{{containerNames}}"
+
+- name: Destroy htdocs
+  file:
+    path: "{{item}}"
+    state: absent
+  with_items:
+  - "{{stagingHtdocs}}"
+
+- name: Destroy SSL certs for {{containerName}}
+  shell: rm -rf "{{item}}"
+  with_items:
+  - "{{certsFilesAndFolders}}"

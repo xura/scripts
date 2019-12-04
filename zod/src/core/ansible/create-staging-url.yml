@@ -1,7 +1,0 @@
----
-# xura playbook
-- hosts: web
-  user: rancher
-  become: yes
-  roles:
-    - { role: single-page-app, tags: 'spa' }

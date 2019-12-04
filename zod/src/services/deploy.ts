@@ -17,7 +17,7 @@ export default class {
     @inject('Ping') private _ping?: Ping
   ) { }
 
-  clean(keep: string, env: Environment): Promise<[boolean, string]> {
+  clean(keep: string, env: Environment): Promise<[boolean, string[]]> {
     if (!this._cdn) {
       return Promise.reject([false, DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('cdn')])
     }
@@ -45,5 +45,13 @@ export default class {
     }
 
     return this._ping.check(site, 10, 6000);
+  }
+
+  destroyDeployments(tags: string[]): Promise<[boolean, string]> {
+    if (!this._docker) {
+      return Promise.reject([false, DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('docker')])
+    }
+
+    return this._docker.destroySpaContainers(tags);
   }
 }

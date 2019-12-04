@@ -27,9 +27,11 @@ export default class Clean extends Command {
 
   async run() {
     const { args } = this.parse(Clean)
+    const deployer = new Deploy();
 
     await new Deploy()
       .clean(args.keep, args.env)
+      .then(([success, deletedDeployments]) => deployer.destroyDeployments(deletedDeployments))
       .then(response => this.log(success(response[1])))
       .catch(error => this.log(err(error[1] ? error[1] : error.toString())))
 

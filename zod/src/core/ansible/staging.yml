@@ -1,0 +1,10 @@
+---
+# xura playbook
+- hosts: web
+  user: rancher
+  become: yes
+  tasks:
+    - include: roles/spa/tasks/create.yml
+      tags: create-spa
+    - include: roles/spa/tasks/destroy-multiple.yml
+      tags: destroy-multiple-spas

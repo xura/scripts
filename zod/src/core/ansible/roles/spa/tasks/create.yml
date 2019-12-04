@@ -8,7 +8,7 @@
     url: "{{indexHtmlCdnUrl}}"
     dest: "{{stagingHtdocs}}"
 
-- name: Single Page App Container UP
+- name: Spin up SPA Container
   docker_container:
     name: "{{containerName}}"
     image: httpd:alpine

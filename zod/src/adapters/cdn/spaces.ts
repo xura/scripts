@@ -4,6 +4,7 @@ import { autoInjectable, inject } from 'tsyringe'
 import { S3 } from 'aws-sdk'
 import { deleteRecursive } from 's3-commons'
 import { Config, Environment } from '../../interfaces/config'
+import { success } from '../../core/color'
 
 export const CDN_ERRORS = {
   DELETING_MORE_THAN_IS_AVAILABLE: (keep: number, totalDeployments: number) => (`You want to keep ${keep} deployments. There are ${totalDeployments} deployments remaining. Zod will not send any deployments to the phantom zone.`),
@@ -40,7 +41,7 @@ export default class implements Cdn {
   private _sortMapByDatePropertyValue = (map: Map<string, Date>) =>
     new Map([...map.entries()].sort((a, b) => a[1].getTime() - b[1].getTime()));
 
-  async clean(keep: number, env: Environment): Promise<[boolean, string]> {
+  async clean(keep: number, env: Environment): Promise<[boolean, string[]]> {
     const releasePath = `${env}/${this._project}/`
 
     const allObjectsUnderReleasePath =
@@ -95,6 +96,8 @@ export default class implements Cdn {
     if (!deletedCount)
       return Promise.reject([false, CDN_ERRORS.ERROR_DELETING_DEPLOYMENTS])
 
-    return Promise.resolve([true, CDN_MESSAGES.SUCCESSFULLY_DELETED_THESE_DEPLOYMENTS(deleteObjectsDescriptor)])
+    console.log(success(CDN_MESSAGES.SUCCESSFULLY_DELETED_THESE_DEPLOYMENTS(deleteObjectsDescriptor)));
+
+    return Promise.resolve([true, deploymentsToDelete])
   }
 }

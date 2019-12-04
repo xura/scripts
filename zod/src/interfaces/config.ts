@@ -10,7 +10,8 @@ export type ConfigKey =
     | 'STAGING_HTDOCS'
     | 'STAGING_DOCKER_NETWORK'
     | 'STAGING_URL'
-    | 'CDN_STAGING_URL';
+    | 'CDN_STAGING_URL'
+    | 'STAGING_CERTS_DIR';
 
 export type Environment = 'staging' | 'production';
 
