@@ -3,6 +3,7 @@ import { Command, flags } from '@oclif/command'
 import Deploy from '../../services/deploy'
 import { success, error as err, blue } from '../../core/color'
 import terminalLink from 'terminal-link';
+import { get } from 'https';
 
 export default class CreateStagingUrl extends Command {
     static description = 'spin up a staging URL for a given tag'
@@ -25,6 +26,17 @@ export default class CreateStagingUrl extends Command {
         const { args } = this.parse(CreateStagingUrl)
         const deployer = new Deploy();
 
+        const b = await new Promise<any>((resolve, reject) => {
+            get({ hostname: 'v0032.data.staging.xura.io', agent: false }, res => {
+                resolve(res)
+            }).on('error', e => {
+                resolve(e)
+            });
+        });
+        if (b.socket) {
+            const c = 'a';
+        }
+        return b;
         await deployer
             .createStagingUrl(args.tag)
             .then(([success, stagingUrl]) => deployer.ping(stagingUrl))
