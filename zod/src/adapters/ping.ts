@@ -1,7 +1,7 @@
 import { warn, success } from '../core/color';
 import { Ping } from '../interfaces/ping';
 import { retry } from 'async';
-import { promise } from 'ping';
+import { get } from 'https';
 
 const PING_ERRORS = {
     FAILED_TO_REACH_SITE: (site: string) => `Failed to ping ${site}`,
@@ -29,7 +29,14 @@ export default class implements Ping {
                     return interval
                 }
             }, async () => {
-                if (!(await promise.probe(secureSite)).alive)
+                const siteIsReachable = await new Promise<any>((resolve, reject) => {
+                    get({ hostname: site, agent: false }, res => {
+                        resolve(!!res.socket)
+                    }).on('error', e => {
+                        resolve(false)
+                    });
+                });
+                if (!siteIsReachable)
                     throw Error(PING_ERRORS.FAILED_TO_REACH_SITE(site));
                 return true;
             }, function (err) {

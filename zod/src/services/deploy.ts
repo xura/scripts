@@ -34,6 +34,7 @@ export default class {
     //      [ ] Remove staging htdocs for version
     //      [ ] Remove container instance
     //      [ ] Remove certs from nginx/certs folder
+    // [ ] Test in container with ansible
 
     return this._docker.createSpaContainer(tag);
   }

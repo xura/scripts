@@ -8,7 +8,9 @@ export type ConfigKey =
     | 'PROJECT'
     | 'NODE_ENV'
     | 'STAGING_HTDOCS'
-    | 'STAGING_DOCKER_NETWORK';
+    | 'STAGING_DOCKER_NETWORK'
+    | 'STAGING_URL'
+    | 'CDN_STAGING_URL';
 
 export type Environment = 'staging' | 'production';
 
