@@ -7,11 +7,13 @@ import Spaces from '../../src/adapters/cdn/spaces'
 import Config from '../../src/adapters/config'
 import Ansible from '../../src/adapters/docker/ansible'
 import Ping from '../../src/adapters/ping'
+import { inject } from '../../src/hooks/init/init'
 
 const sandbox = sinon.createSandbox()
 
 describe('Deploy service', () => {
   beforeEach(() => {
+    inject()
     sandbox.stub(Ansible.prototype, 'destroySpaContainers').resolves([true, 'Successfully destroyed'])
     chai.should()
     chai.use(cap)
@@ -27,7 +29,7 @@ describe('Deploy service', () => {
     const expectedError = DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('cdn')
 
     // assert
-    await expect(new Deploy(undefined).clean('3', 'staging')).to.eventually.be.rejected.then(error => {
+    await expect(new Deploy().clean('3', 'staging')).to.eventually.be.rejected.then(error => {
       expect(error[1]).to.equal(expectedError)
     })
   })
@@ -36,7 +38,7 @@ describe('Deploy service', () => {
     // arrange
     const expectedMessage = 'Successfully cleaned'
     const clean = sandbox.stub(Spaces.prototype, 'clean').resolves([true, []])
-    const deployService = new Deploy(new Spaces(new Config()), new Ansible(new Config()), new Ping())
+    const deployService = new Deploy()
 
     // assert
     await expect(deployService.clean('3', 'staging')).to.eventually.be.fulfilled.then(message => {

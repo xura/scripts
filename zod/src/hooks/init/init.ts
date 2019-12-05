@@ -20,11 +20,15 @@ require('dotenv').config({
   path: envFile,
 })
 
-const hook: Hook<'init'> = function () {
+export const inject = () => {
   container.register('Config', Config)
   container.register('Cdn', Spaces)
   container.register('Docker', Ansible)
   container.register('Ping', Ping)
+}
+
+const hook: Hook<'init'> = function () {
+  inject()
 }
 
 export default hook
