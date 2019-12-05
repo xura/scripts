@@ -1,17 +1,21 @@
-import chai, {expect} from 'chai'
+import chai, { expect } from 'chai'
 import sinon from 'sinon'
 import cap from 'chai-as-promised'
 
-import Deploy, {DEPLOY_ERRORS} from '../../src/services/deploy'
+import Deploy, { DEPLOY_ERRORS } from '../../src/services/deploy'
 import Spaces from '../../src/adapters/cdn/spaces'
-import Config from '../../src/services/config'
+import Config from '../../src/adapters/config'
+import Ansible from '../../src/adapters/docker/ansible'
+import Ping from '../../src/adapters/ping'
 
 const sandbox = sinon.createSandbox()
 
 describe('Deploy service', () => {
   beforeEach(() => {
+    sandbox.stub(Ansible.prototype, 'destroySpaContainers').resolves([true, 'Successfully destroyed'])
     chai.should()
     chai.use(cap)
+    sandbox.stub(console, 'log')
   })
 
   afterEach(() => {
@@ -31,8 +35,8 @@ describe('Deploy service', () => {
   it('calls clean', async function () {
     // arrange
     const expectedMessage = 'Successfully cleaned'
-    const clean = sandbox.stub(Spaces.prototype, 'clean').resolves([true, 'Successfully cleaned'])
-    const deployService = new Deploy(new Spaces(new Config()))
+    const clean = sandbox.stub(Spaces.prototype, 'clean').resolves([true, []])
+    const deployService = new Deploy(new Spaces(new Config()), new Ansible(new Config()), new Ping())
 
     // assert
     await expect(deployService.clean('3', 'staging')).to.eventually.be.fulfilled.then(message => {

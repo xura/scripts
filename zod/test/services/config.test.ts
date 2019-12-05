@@ -1,8 +1,8 @@
-import chai, {expect} from 'chai'
+import chai, { expect } from 'chai'
 import sinon from 'sinon'
 import cap from 'chai-as-promised'
 
-import Config from '../../src/services/config'
+import Config from '../../src/adapters/config'
 
 const sandbox = sinon.createSandbox()
 

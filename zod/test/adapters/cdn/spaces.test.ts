@@ -8,7 +8,7 @@ import * as s3Commons from 's3-commons'
 import chai, { expect } from 'chai'
 
 import Spaces, { CDN_ERRORS, CDN_MESSAGES } from '../../../src/adapters/cdn/spaces'
-import Config from '../../adapters/config'
+import Config from '../../../src/adapters/config'
 import { ConfigKey } from '../../../src/interfaces/config'
 
 const sandbox = sinon.createSandbox()
@@ -36,6 +36,7 @@ describe('Spaces adapter', () => {
     chai.should()
     chai.use(cap)
     configStub = sandbox.stub(Config.prototype, 'get')
+    sandbox.stub(console, 'log')
   })
 
   afterEach(() => {
