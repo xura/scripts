@@ -9,7 +9,7 @@ const PING_ERRORS = {
         `Could not connect to ${site} after ${retries} retries`
 }
 
-const PING_MESSAGES = {
+export const PING_MESSAGES = {
     SUCCESSFULLY_PINGED_SITE: (site: string) => `Successfully reached ${site}`,
     FAILED_TO_PING_SITE_RETRYING: (site: string, retryCount: number) =>
         `Failed to ping ${site}. Retry #${retryCount}...`,

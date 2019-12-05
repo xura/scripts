@@ -10,6 +10,7 @@ import chai, { expect } from 'chai'
 import Spaces, { CDN_ERRORS, CDN_MESSAGES } from '../../../src/adapters/cdn/spaces'
 import Config from '../../../src/adapters/config'
 import { ConfigKey } from '../../../src/interfaces/config'
+import { inject } from '../../../src/hooks/init/init'
 
 const sandbox = sinon.createSandbox()
 
@@ -33,6 +34,7 @@ describe('Spaces adapter', () => {
   const bucketName = 'xura-cdn'
 
   beforeEach(() => {
+    inject()
     chai.should()
     chai.use(cap)
     configStub = sandbox.stub(Config.prototype, 'get')
@@ -71,18 +73,15 @@ describe('Spaces adapter', () => {
     const listObjects = sandbox.stub().resolves({ Contents: possibleReleasePaths })
     AWSMock.mock('S3', 'listObjects', listObjects)
 
-    const spacesAdapter = new Spaces(new Config())
+    const spacesAdapter = new Spaces()
 
     // act
-    const success = await spacesAdapter.clean(3, 'staging')
+    await spacesAdapter.clean(3, 'staging')
 
     // assert
     sandbox.assert.calledWith(deleteRecursive, sinon.match.any, bucketName, expectedDeploymentTags[0])
     sandbox.assert.calledWith(deleteRecursive, sinon.match.any, bucketName, expectedDeploymentTags[1])
     sandbox.assert.calledWith(deleteRecursive, sinon.match.any, bucketName, expectedDeploymentTags[2])
-    expect(success[1]).to.eq(CDN_MESSAGES.SUCCESSFULLY_DELETED_THESE_DEPLOYMENTS(
-      expectedDeploymentTags.join(', '),
-    ))
   })
 
   it('rejects with an error message if deleteRecursive returns 0', async function () {

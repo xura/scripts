@@ -9,6 +9,7 @@ import { success, warn } from '../../core/color'
 export const CDN_ERRORS = {
   DELETING_MORE_THAN_IS_AVAILABLE: (keep: number, totalDeployments: number) => (`You want to keep ${keep} deployments. There are ${totalDeployments} deployments remaining. Zod will not send any deployments to the phantom zone.`),
   ERROR_DELETING_DEPLOYMENTS: 'There was an error deleting deployments',
+  PROPERTY_NOT_INJECTED: (property: string) => (`${property} adapter not injected properly`),
 }
 
 export const CDN_MESSAGES = {
@@ -22,16 +23,19 @@ export default class implements Cdn {
   private _bucketName: string;
   private _project: string;
 
-  constructor(@inject('Config') private _config: Config) {
+  constructor(@inject('Config') private _config?: Config) {
+    if (!this._config)
+      throw Error(CDN_ERRORS.PROPERTY_NOT_INJECTED('config'))
+
     this._bucketName = this._config.get('DIGITAL_OCEAN_BUCKET_NAME')
     this._project = this._config.get('PROJECT')
   }
 
   private _s3 = new S3({
-    accessKeyId: this._config.get('DIGITAL_OCEAN_ACCESS_KEY_ID'),
-    secretAccessKey: this._config.get('DIGITAL_OCEAN_SECRET_ACCESS_KEY'),
-    endpoint: this._config.get('DIGITAL_OCEAN_ENDPOINT'),
-    region: this._config.get('DIGITAL_OCEAN_REGION'),
+    accessKeyId: this._config?.get('DIGITAL_OCEAN_ACCESS_KEY_ID'),
+    secretAccessKey: this._config?.get('DIGITAL_OCEAN_SECRET_ACCESS_KEY'),
+    endpoint: this._config?.get('DIGITAL_OCEAN_ENDPOINT'),
+    region: this._config?.get('DIGITAL_OCEAN_REGION'),
     params: {
       ACL: 'public-read',
     },

@@ -13,7 +13,6 @@ const sandbox = sinon.createSandbox()
 
 describe('Deploy service', () => {
   beforeEach(() => {
-    inject()
     sandbox.stub(Ansible.prototype, 'destroySpaContainers').resolves([true, 'Successfully destroyed'])
     chai.should()
     chai.use(cap)
@@ -29,20 +28,22 @@ describe('Deploy service', () => {
     const expectedError = DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('cdn')
 
     // assert
-    await expect(new Deploy().clean('3', 'staging')).to.eventually.be.rejected.then(error => {
+    await expect(new Deploy(undefined).clean('3', 'staging')).to.eventually.be.rejected.then(error => {
       expect(error[1]).to.equal(expectedError)
     })
   })
 
   it('calls clean', async function () {
     // arrange
+    inject()
+    const cleanedDeployments = ['v0.0.25']
     const expectedMessage = 'Successfully cleaned'
-    const clean = sandbox.stub(Spaces.prototype, 'clean').resolves([true, []])
+    const clean = sandbox.stub(Spaces.prototype, 'clean').resolves([true, cleanedDeployments])
     const deployService = new Deploy()
 
     // assert
     await expect(deployService.clean('3', 'staging')).to.eventually.be.fulfilled.then(message => {
-      expect(message[1]).to.equal(expectedMessage)
+      expect(message[1]).to.equal(cleanedDeployments)
     })
     sandbox.assert.called(clean)
   })

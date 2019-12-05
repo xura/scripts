@@ -46,7 +46,7 @@
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--grep",
-                "andles properly when there is only one deployment avaialble on xura-cdn"
+                "retries the given amount of attempts and shows the correct message"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
