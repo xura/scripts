@@ -30,6 +30,18 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "zod deploy:clean",
+            "program": "${workspaceFolder}/bin/run",
+            "args": [
+                "deploy:clean",
+                "staging"
+            ],
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Mocha",
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [

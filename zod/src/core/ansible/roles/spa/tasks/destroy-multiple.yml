@@ -12,7 +12,13 @@
   with_items:
   - "{{stagingHtdocs}}"
 
-- name: Destroy SSL certs for {{containerName}}
+- name: Destroy SSL certs
   shell: rm -rf "{{item}}"
   with_items:
   - "{{certsFilesAndFolders}}"
+
+- name: Remove SSL cert directory content
+  file:
+    path: "{{item}}" 
+    state: absent
+  with_items: "{{certDirs}}"

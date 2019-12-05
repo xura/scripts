@@ -65,11 +65,13 @@ export default class implements Docker {
         const stagingHtdocs = names.map(name => this._spaHtDocs(name))
         const certsFilesAndFolders = names.map(name => `${this._stagingCertsDir}/${this._removePeriods(name)}.*`)
         const stagingUrlsDescriptor = stagingUrls.join(', ')
+        const certDirs = names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
 
         const ansibleExtraVars = JSON.stringify({
             containerNames: stagingUrls,
             stagingHtdocs,
-            certsFilesAndFolders
+            certsFilesAndFolders,
+            certDirs
         })
         const command = `staging.yml -i xura --extra-vars '${ansibleExtraVars}' --tags destroy-multiple-spas`
 

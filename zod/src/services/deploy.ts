@@ -25,16 +25,10 @@ export default class {
     return this._cdn.clean(Number(keep), env)
   }
 
-  async createStagingUrl(tag: string): Promise<[boolean, string]> {
+  createStagingUrl(tag: string): Promise<[boolean, string]> {
     if (!this._docker) {
       return Promise.reject([false, DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('docker')])
     }
-
-    // [ ] develop command to remove spa container:
-    //      [ ] Remove staging htdocs for version
-    //      [ ] Remove container instance
-    //      [ ] Remove certs from nginx/certs folder
-    // [ ] Test in container with ansible
 
     return this._docker.createSpaContainer(tag);
   }

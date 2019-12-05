@@ -29,14 +29,11 @@ export default class Clean extends Command {
     const { args } = this.parse(Clean)
     const deployer = new Deploy();
 
-    await new Deploy()
+    await deployer
       .clean(args.keep, args.env)
       .then(([success, deletedDeployments]) => deployer.destroyDeployments(deletedDeployments))
       .then(response => this.log(success(response[1])))
       .catch(error => this.log(err(error[1] ? error[1] : error.toString())))
-
-    // TODO SCRPT-12
-    // Remove staging containers for the deployments that have been removed from CDN
 
   }
 }
