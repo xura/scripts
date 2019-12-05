@@ -8,8 +8,8 @@ import { success, warn } from '../../core/color';
 const ANSIBLE_MESSAGES = {
     STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
     ATTEMPTING_TO_CREATE_STAGING_URL: (stagingUrl: string) => `Attempting to create a staging URL at ${stagingUrl}...`,
-    ATTEMPTING_TO_DESTROY_DEPLOYMENTS: (stagingUrls: string) => `Attempting to destroy the following deployments: ${stagingUrls}...`,
-    DEPLOYMENTS_DESTROYED: (stagingUrlsDescriptor: string) => `The following deployments no loger have staging URLs: ${stagingUrlsDescriptor}`
+    ATTEMPTING_TO_DESTROY_DEPLOYMENTS: (stagingUrls: string) => `Attempting to destroy containers and SSL certs for the following deployments: ${stagingUrls}...`,
+    DEPLOYMENTS_DESTROYED: (stagingUrlsDescriptor: string) => `The following deployments no longer have staging URLs: ${stagingUrlsDescriptor}`
 }
 
 @autoInjectable()
@@ -82,6 +82,6 @@ export default class implements Docker {
             return Promise.reject([false, err])
         }
 
-        return Promise.resolve([true, ANSIBLE_MESSAGES.DEPLOYMENTS_DESTROYED(stagingUrlsDescriptor)])
+        return Promise.resolve([true, ANSIBLE_MESSAGES.DEPLOYMENTS_DESTROYED(names.join(', '))])
     }
 }
