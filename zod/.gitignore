@@ -7,5 +7,6 @@
 /tmp
 /src/core/ansible/droplet4
 /src/core/ansible/xura
+/src/core/ansible/staging.retry
 node_modules
 .env
