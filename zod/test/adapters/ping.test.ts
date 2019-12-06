@@ -2,12 +2,13 @@ import 'reflect-metadata'
 import https from 'https';
 import sinon from 'sinon'
 import Ping, { PING_MESSAGES } from '../../src/adapters/ping';
+import nock from 'nock';
+
 const sandbox = sinon.createSandbox()
 
 describe('Ping adapter', () => {
 
     beforeEach(() => {
-        sandbox.useFakeServer()
         sandbox.stub(console, 'log')
     })
 
@@ -17,9 +18,14 @@ describe('Ping adapter', () => {
 
     it('retries the given amount of attempts and shows the correct message', async function () {
         // arrange
-        const siteToPing = '/some/random/site';
-        const exampleServer = sinon.fakeServer.create();
-        exampleServer.respondWith('get', siteToPing, [500, {}, 'Failed'])
+        const siteToPing = 'example.com';
+        nock(`https://${siteToPing}`)
+            .get('/')
+            .replyWithError({
+                message: 'something awful happened',
+                code: 'AWFUL_ERROR',
+            })
+
         const failedToPingSiteMessage = sandbox.stub(PING_MESSAGES, 'FAILED_TO_PING_SITE_RETRYING')
         const attempts = 3
 
@@ -28,8 +34,6 @@ describe('Ping adapter', () => {
 
         // assert
         sandbox.assert.calledTwice(failedToPingSiteMessage)
-
-        exampleServer.restore()
     })
 
 })
