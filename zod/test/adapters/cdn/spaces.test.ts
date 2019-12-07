@@ -7,7 +7,7 @@ import AWS from 'aws-sdk'
 import * as s3Commons from 's3-commons'
 import chai, { expect } from 'chai'
 
-import Spaces, { CDN_ERRORS, CDN_MESSAGES } from '../../../src/adapters/cdn/spaces'
+import Spaces, { CDN_ERRORS } from '../../../src/adapters/cdn/spaces'
 import Config from '../../../src/adapters/config'
 import { ConfigKey } from '../../../src/interfaces/config'
 import { inject } from '../../../src/hooks/init/init'
@@ -53,7 +53,7 @@ describe('Spaces adapter', () => {
     AWSMock.mock('S3', 'listObjects', listObjects)
     configStub.withArgs(sinon.match.any).returns('ENV_VAR')
 
-    const spacesAdapter = new Spaces(new Config())
+    const spacesAdapter = new Spaces()
 
     // act
     spacesAdapter.clean(3, 'staging').catch(error => error)
@@ -95,7 +95,7 @@ describe('Spaces adapter', () => {
     const listObjects = sandbox.stub().resolves({ Contents: possibleReleasePaths })
     AWSMock.mock('S3', 'listObjects', listObjects)
 
-    const spacesAdapter = new Spaces(new Config())
+    const spacesAdapter = new Spaces()
     const expectedError = CDN_ERRORS.ERROR_DELETING_DEPLOYMENTS
 
     // assert
@@ -110,7 +110,7 @@ describe('Spaces adapter', () => {
     AWSMock.mock('S3', 'listObjects', listObjects)
     configStub.withArgs(sinon.match.any).returns('ENV_VAR')
 
-    const spacesAdapter = new Spaces(new Config())
+    const spacesAdapter = new Spaces()
     const keep = 3
     const expectedError = CDN_ERRORS.DELETING_MORE_THAN_IS_AVAILABLE(keep, 0)
 
@@ -120,7 +120,7 @@ describe('Spaces adapter', () => {
     })
   })
 
-  it('resolves properly when there is only one deployment avaialble on cdn', async function () {
+  it('resolves properly when there is only one deployment available on cdn', async function () {
     // arrange
     AWSMock.setSDKInstance(AWS)
     configStub.withArgs('PROJECT').returns('data')

@@ -10,7 +10,7 @@ import { Environment } from '../../src/interfaces/config'
 
 const sandbox = sinon.createSandbox()
 
-describe('Deploy command', () => {
+describe('deploy:clean command', () => {
   let deploy: sinon.SinonStub<[string, Environment], Promise<[boolean, string[]]>>
   let success: sinon.SinonStub<[string], string>
 
@@ -19,7 +19,7 @@ describe('Deploy command', () => {
     chai.use(cap)
     sandbox.stub(Deploy.prototype, 'destroyDeployments').resolves([true, 'Destroyed successfully'])
     deploy = sandbox.stub(Deploy.prototype, 'clean').resolves([true, []])
-    success = sandbox.stub(response, 'success').returns('Success')
+    success = sandbox.stub(response, 'success')
     sandbox.stub(console, 'log')
   })
 

@@ -18,10 +18,10 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "zod deploy:create-staging-url",
+            "name": "zod deploy:create",
             "program": "${workspaceFolder}/bin/run",
             "args": [
-                "deploy:create-staging-url",
+                "deploy:create",
                 "v0.0.42"
             ],
             "cwd": "${workspaceRoot}",
@@ -46,7 +46,7 @@
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--grep",
-                "retries the given amount of attempts and shows the correct message"
+                "runs deploy:clean"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

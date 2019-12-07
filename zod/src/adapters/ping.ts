@@ -3,7 +3,7 @@ import { Ping } from '../interfaces/ping';
 import { retry } from 'async';
 import { get } from 'request';
 
-const PING_ERRORS = {
+export const PING_ERRORS = {
     FAILED_TO_REACH_SITE: (site: string) => `Failed to ping ${site}`,
     FAILED_TO_REACH_SITE_AFTER_RETRIES: (site: string, retries: number) =>
         `Could not connect to ${site} after ${retries} retries`
@@ -37,7 +37,7 @@ export default class implements Ping {
                     })
                 });
                 if (!siteIsReachable)
-                    throw Error(PING_ERRORS.FAILED_TO_REACH_SITE(site));
+                    throw Error(PING_ERRORS.FAILED_TO_REACH_SITE(site))
                 return true;
             }, function (err) {
                 if (err)

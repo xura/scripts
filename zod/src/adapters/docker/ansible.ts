@@ -29,9 +29,9 @@ export default class implements Docker {
         `${this._removePeriods(name)}.${this._project}.${this._stagingUrl}`
 
     private _spaHtDocs = (name: string) =>
-        `${this._config.get('STAGING_HTDOCS')}/${this._project}/${name}`
+        `${this._config?.get('STAGING_HTDOCS')}/${this._project}/${name}`
 
-    constructor(@inject('Config') private _config: Config) { }
+    constructor(@inject('Config') private _config: Config = {} as Config) { }
 
     async createSpaContainer(name: string): Promise<[boolean, string]> {
 

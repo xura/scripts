@@ -6,7 +6,7 @@ import Config from '../../src/adapters/config'
 
 const sandbox = sinon.createSandbox()
 
-describe('Config service', () => {
+describe('Config adapter', () => {
   beforeEach(() => {
     chai.should()
     chai.use(cap)

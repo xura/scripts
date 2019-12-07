@@ -25,7 +25,7 @@ export default class {
     return this._cdn.clean(Number(keep), env)
   }
 
-  createStagingUrl(tag: string): Promise<[boolean, string]> {
+  create(tag: string): Promise<[boolean, string]> {
     if (!this._docker) {
       return Promise.reject([false, DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('docker')])
     }
