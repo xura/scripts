@@ -7,6 +7,8 @@ import { test } from '@oclif/test'
 import Deploy from '../../src/services/deploy'
 import * as response from '../../src/core/color'
 import { Environment } from '../../src/interfaces/config'
+import Clean from '../../src/commands/deploy/clean'
+import { IConfig } from '@oclif/config'
 
 const sandbox = sinon.createSandbox()
 

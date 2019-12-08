@@ -46,7 +46,7 @@
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--grep",
-                "runs deploy:clean"
+                "calls destroyDeployments"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

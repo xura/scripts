@@ -33,8 +33,6 @@ Upload tarbells:
   only:
     variables:
       - $CI_COMMIT_REF_NAME == "master"
-  # only:
-  #   - tags
   script:
     - cd zod
     - apt-get update
@@ -47,17 +45,3 @@ Upload tarbells:
     - rename 's/zod-(v)(\d+\.)(\d+\.)(\d+)/zod/gi' *.tar.gz
     - gem install dpl
     - dpl --skip_cleanup --provider=s3 --access_key_id=$DIGITAL_OCEAN_ACCESS_KEY_ID --secret_access_key=$DIGITAL_OCEAN_SECRET_ACCESS_KEY --bucket=xura-cdn --region=sfo2 --endpoint=https://sfo2.digitaloceanspaces.com --local_dir=./ --upload_dir=zod --acl=public_read
-
-Build Docker Image:
-  stage: Deploy
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
-  only:
-    variables:
-      - $CI_COMMIT_REF_NAME == "master"
-  only:
-    - tags
-  script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$REGISTRY_USER\",\"password\":\"$REGISTRY_PW\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG

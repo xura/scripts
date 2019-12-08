@@ -5,7 +5,7 @@ import { inject, autoInjectable } from 'tsyringe';
 import { Config } from '../../interfaces/config';
 import { success, warn } from '../../core/color';
 
-const ANSIBLE_MESSAGES = {
+export const ANSIBLE_MESSAGES = {
     STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
     ATTEMPTING_TO_CREATE_STAGING_URL: (stagingUrl: string) => `Attempting to create a staging URL at ${stagingUrl}...`,
     ATTEMPTING_TO_DESTROY_DEPLOYMENTS: (stagingUrls: string) => `Attempting to destroy containers and SSL certs for the following deployments: ${stagingUrls}...`,
@@ -63,9 +63,11 @@ export default class implements Docker {
 
         const stagingUrls = names.map(name => this._spaContainerName(name))
         const stagingHtdocs = names.map(name => this._spaHtDocs(name))
-        const certsFilesAndFolders = names.map(name => `${this._stagingCertsDir}/${this._removePeriods(name)}.*`)
+        const certsFilesAndFolders =
+            names.map(name => `${this._stagingCertsDir}/${this._removePeriods(name)}.*`)
         const stagingUrlsDescriptor = stagingUrls.join(', ')
-        const certDirs = names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
+        const certDirs =
+            names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
 
         const ansibleExtraVars = JSON.stringify({
             containerNames: stagingUrls,
