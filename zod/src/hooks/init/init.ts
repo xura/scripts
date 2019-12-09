@@ -3,9 +3,9 @@ import 'reflect-metadata'
 import Ansible from '../../adapters/docker/ansible'
 import Spaces from '../../adapters/cdn/spaces'
 import Config from '../../adapters/config'
-import Ping from '../../adapters/ping';
-import { container } from 'tsyringe'
-import { Hook } from '@oclif/config'
+import Ping from '../../adapters/ping'
+import {container} from 'tsyringe'
+import {Hook} from '@oclif/config'
 
 const fs = require('fs')
 const path = require('path')

@@ -1,12 +1,12 @@
-import chai, { expect } from 'chai'
+import chai, {expect} from 'chai'
 import sinon from 'sinon'
 import cap from 'chai-as-promised'
 
-import Deploy, { DEPLOY_ERRORS } from '../../src/services/deploy'
+import Deploy, {DEPLOY_ERRORS} from '../../src/services/deploy'
 import Ping from '../../src/adapters/ping'
 import Spaces from '../../src/adapters/cdn/spaces'
 import Ansible from '../../src/adapters/docker/ansible'
-import { inject } from '../../src/hooks/init/init'
+import {inject} from '../../src/hooks/init/init'
 
 const sandbox = sinon.createSandbox()
 
@@ -59,7 +59,6 @@ describe('Deploy service', () => {
       expect(message[1]).to.equal(expectedMessage)
     })
     sandbox.assert.called(destroyDeployments)
-
   })
 
   it('rejects with an error when docker is not injected properly', async function () {
@@ -86,7 +85,6 @@ describe('Deploy service', () => {
       expect(message[1]).to.equal(expectedMessage)
     })
     sandbox.assert.called(ping)
-
   })
 
   it('rejects with an error when ping is not injected properly', async function () {
@@ -112,7 +110,6 @@ describe('Deploy service', () => {
       expect(message[1]).to.equal(expectedMessage)
     })
     sandbox.assert.called(create)
-
   })
 
   it('rejects with an error when docker is not injected properly for create', async function () {

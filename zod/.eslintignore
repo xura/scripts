@@ -1,1 +1,6 @@
 /lib
+/tmp
+/node_modules
+/dist
+/coverage
+/bin

@@ -2,6 +2,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "sourceMap": true,
     "declaration": true,
     "importHelpers": true,
     "module": "commonjs",

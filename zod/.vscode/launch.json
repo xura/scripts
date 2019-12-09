@@ -46,6 +46,18 @@
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--grep",
+                "outputs an error when a thrown Error occurs within destroyDeployments"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha1",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "--grep",
                 "outputs an error when a rejection occurs within destroyDeployments"
             ],
             "console": "integratedTerminal",

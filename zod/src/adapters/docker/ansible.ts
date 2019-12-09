@@ -1,89 +1,90 @@
-import { Docker } from '../../interfaces/docker';
-import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js';
-import path from 'path';
-import { inject, autoInjectable } from 'tsyringe';
-import { Config } from '../../interfaces/config';
-import { success, warn } from '../../core/color';
+import {Docker} from '../../interfaces/docker'
+import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
+import path from 'path'
+import {inject, autoInjectable} from 'tsyringe'
+import {Config} from '../../interfaces/config'
+import {success, warn} from '../../core/color'
 
 export const ANSIBLE_MESSAGES = {
-    STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
-    ATTEMPTING_TO_CREATE_STAGING_URL: (stagingUrl: string) => `Attempting to create a staging URL at ${stagingUrl}...`,
-    ATTEMPTING_TO_DESTROY_DEPLOYMENTS: (stagingUrls: string) => `Attempting to destroy containers and SSL certs for the following deployments: ${stagingUrls}...`,
-    DEPLOYMENTS_DESTROYED: (stagingUrlsDescriptor: string) => `The following deployments no longer have staging URLs: ${stagingUrlsDescriptor}`
+  STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
+  ATTEMPTING_TO_CREATE_STAGING_URL: (stagingUrl: string) => `Attempting to create a staging URL at ${stagingUrl}...`,
+  ATTEMPTING_TO_DESTROY_DEPLOYMENTS: (stagingUrls: string) => `Attempting to destroy containers and SSL certs for the following deployments: ${stagingUrls}...`,
+  DEPLOYMENTS_DESTROYED: (stagingUrlsDescriptor: string) => `The following deployments no longer have staging URLs: ${stagingUrlsDescriptor}`,
 }
 
 @autoInjectable()
 export default class implements Docker {
+  private _project: string = this._config.get('PROJECT')
 
-    private _project: string = this._config.get('PROJECT')
-    private _stagingUrl: string = this._config.get('STAGING_URL')
-    private _cdnStagingUrl: string = this._config.get('CDN_STAGING_URL')
-    private _stagingCertsDir: string = this._config.get('STAGING_CERTS_DIR')
-    private _playbook = new AnsiblePlaybook(
-        new Options(path.resolve(path.join(__dirname, '../../core/ansible')))
-    );
+  private _stagingUrl: string = this._config.get('STAGING_URL')
 
-    private _removePeriods = (name: string) => `${name.replace(/\./g, '')}`
+  private _cdnStagingUrl: string = this._config.get('CDN_STAGING_URL')
 
-    private _spaContainerName = (name: string) =>
-        `${this._removePeriods(name)}.${this._project}.${this._stagingUrl}`
+  private _stagingCertsDir: string = this._config.get('STAGING_CERTS_DIR')
 
-    private _spaHtDocs = (name: string) =>
-        `${this._config?.get('STAGING_HTDOCS')}/${this._project}/${name}`
+  private _playbook = new AnsiblePlaybook(
+    new Options(path.resolve(path.join(__dirname, '../../core/ansible')))
+  );
 
-    constructor(@inject('Config') private _config: Config = {} as Config) { }
+  private _removePeriods = (name: string) => `${name.replace(/\./g, '')}`
 
-    async createSpaContainer(name: string): Promise<[boolean, string]> {
+  private _spaContainerName = (name: string) =>
+    `${this._removePeriods(name)}.${this._project}.${this._stagingUrl}`
 
-        const stagingUrl = this._spaContainerName(name)
-        const stagingHtdocs = this._spaHtDocs(name)
-        const indexHtmlCdnUrl = `${this._cdnStagingUrl}/${this._project}/${name}/index.html`
+  private _spaHtDocs = (name: string) =>
+    `${this._config.get('STAGING_HTDOCS')}/${this._project}/${name}`
 
-        const ansibleExtraVars = JSON.stringify({
-            containerName: stagingUrl,
-            stagingHtdocs,
-            indexHtmlCdnUrl,
-            network: this._config.get('STAGING_DOCKER_NETWORK')
-        })
-        const command = `staging.yml -i xura --extra-vars '${ansibleExtraVars}' --tags create-spa`
+  constructor(@inject('Config') private _config: Config = {} as Config) { }
 
-        try {
-            console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_CREATE_STAGING_URL(stagingUrl)))
-            await this._playbook.command(command)
-        } catch (err) {
-            return Promise.reject([false, err])
-        }
+  async createSpaContainer(name: string): Promise<[boolean, string]> {
+    const stagingUrl = this._spaContainerName(name)
+    const stagingHtdocs = this._spaHtDocs(name)
+    const indexHtmlCdnUrl = `${this._cdnStagingUrl}/${this._project}/${name}/index.html`
 
-        console.log(success(ANSIBLE_MESSAGES.STAGING_URL_CREATED(stagingUrl)))
+    const ansibleExtraVars = JSON.stringify({
+      containerName: stagingUrl,
+      stagingHtdocs,
+      indexHtmlCdnUrl,
+      network: this._config.get('STAGING_DOCKER_NETWORK'),
+    })
+    const command = `staging.yml -i xura --extra-vars '${ansibleExtraVars}' --tags create-spa`
 
-        return Promise.resolve([true, stagingUrl])
+    try {
+      console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_CREATE_STAGING_URL(stagingUrl)))
+      await this._playbook.command(command)
+    } catch (error) {
+      return Promise.reject([false, error])
     }
 
-    async destroySpaContainers(names: string[]): Promise<[boolean, string]> {
+    console.log(success(ANSIBLE_MESSAGES.STAGING_URL_CREATED(stagingUrl)))
 
-        const stagingUrls = names.map(name => this._spaContainerName(name))
-        const stagingHtdocs = names.map(name => this._spaHtDocs(name))
-        const certsFilesAndFolders =
-            names.map(name => `${this._stagingCertsDir}/${this._removePeriods(name)}.*`)
-        const stagingUrlsDescriptor = stagingUrls.join(', ')
-        const certDirs =
-            names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
+    return Promise.resolve([true, stagingUrl])
+  }
 
-        const ansibleExtraVars = JSON.stringify({
-            containerNames: stagingUrls,
-            stagingHtdocs,
-            certsFilesAndFolders,
-            certDirs
-        })
-        const command = `staging.yml -i xura --extra-vars '${ansibleExtraVars}' --tags destroy-multiple-spas`
+  async destroySpaContainers(names: string[]): Promise<[boolean, string]> {
+    const stagingUrls = names.map(name => this._spaContainerName(name))
+    const stagingHtdocs = names.map(name => this._spaHtDocs(name))
+    const certsFilesAndFolders =
+      names.map(name => `${this._stagingCertsDir}/${this._removePeriods(name)}.*`)
+    const stagingUrlsDescriptor = stagingUrls.join(', ')
+    const certDirs =
+      names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
 
-        try {
-            console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_DESTROY_DEPLOYMENTS(stagingUrlsDescriptor)))
-            await this._playbook.command(command)
-        } catch (err) {
-            return Promise.reject([false, err])
-        }
+    const ansibleExtraVars = JSON.stringify({
+      containerNames: stagingUrls,
+      stagingHtdocs,
+      certsFilesAndFolders,
+      certDirs,
+    })
+    const command = `staging.yml -i xura --extra-vars '${ansibleExtraVars}' --tags destroy-multiple-spas`
 
-        return Promise.resolve([true, ANSIBLE_MESSAGES.DEPLOYMENTS_DESTROYED(names.join(', '))])
+    try {
+      console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_DESTROY_DEPLOYMENTS(stagingUrlsDescriptor)))
+      await this._playbook.command(command)
+    } catch (error) {
+      return Promise.reject([false, error])
     }
+
+    return Promise.resolve([true, ANSIBLE_MESSAGES.DEPLOYMENTS_DESTROYED(names.join(', '))])
+  }
 }

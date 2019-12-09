@@ -50,6 +50,7 @@
     "nock": "^11.7.0",
     "nyc": "^15.0.0-beta.3",
     "sinon": "^7.5.0",
+    "source-map-support": "^0.5.16",
     "sync-dotenv": "^2.3.0",
     "ts-node": "^8",
     "typescript": "3.7"
@@ -97,7 +98,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "test": "tsc && nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" && eslint . --ext .ts --config .eslintrc --fix",
+    "test": "tsc && nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --exit && eslint . --ext .ts --config .eslintrc --fix",
     "lint": "eslint . --ext .ts --config .eslintrc --fix",
     "version": "oclif-dev readme && git add README.md",
     "env": "sync-dotenv"

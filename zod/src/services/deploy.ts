@@ -1,9 +1,9 @@
 import 'reflect-metadata'
-import { autoInjectable, inject } from 'tsyringe'
-import { Cdn } from '../interfaces/cdn'
-import { Environment } from '../interfaces/config'
-import { Docker } from '../interfaces/docker';
-import { Ping } from '../interfaces/ping';
+import {autoInjectable, inject} from 'tsyringe'
+import {Cdn} from '../interfaces/cdn'
+import {Environment} from '../interfaces/config'
+import {Docker} from '../interfaces/docker'
+import {Ping} from '../interfaces/ping'
 
 export const DEPLOY_ERRORS = {
   PROPERTY_NOT_INJECTED: (property: string) => (`${property} adapter not injected properly`),
@@ -30,7 +30,7 @@ export default class {
       return Promise.reject([false, DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('docker')])
     }
 
-    return this._docker.createSpaContainer(tag);
+    return this._docker.createSpaContainer(tag)
   }
 
   ping(site: string): Promise<[boolean, string]> {
@@ -38,7 +38,7 @@ export default class {
       return Promise.reject([false, DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('ping')])
     }
 
-    return this._ping.check(site, 10, 6000);
+    return this._ping.check(site, 10, 6000)
   }
 
   destroyDeployments(tags: string[]): Promise<[boolean, string]> {
@@ -46,6 +46,6 @@ export default class {
       return Promise.reject([false, DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('docker')])
     }
 
-    return this._docker.destroySpaContainers(tags);
+    return this._docker.destroySpaContainers(tags)
   }
 }

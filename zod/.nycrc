@@ -1,7 +1,5 @@
 {
-  "extends": "@istanbuljs/nyc-config-typescript",
   "all": true,
-  "instrumentation" :{
   "exclude": [
     "bridge/**",
     "solo/**",
@@ -11,8 +9,7 @@
     "src/index.ts",
     "src/injections.ts",
     "src/hooks/init/init.ts"
-  ]
-  },
+  ],
   "branches": 80,
   "lines": 80,
   "functions": 80,

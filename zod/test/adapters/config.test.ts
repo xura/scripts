@@ -1,4 +1,4 @@
-import chai, { expect } from 'chai'
+import chai, {expect} from 'chai'
 import sinon from 'sinon'
 import cap from 'chai-as-promised'
 
