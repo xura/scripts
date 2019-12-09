@@ -64,6 +64,7 @@ describe('Deploy service', () => {
 
   it('rejects with an error when docker is not injected properly', async function () {
     // arrange
+    inject()
     const expectedError = DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('docker')
 
     // assert
@@ -94,6 +95,32 @@ describe('Deploy service', () => {
 
     // assert
     await expect(new Deploy(undefined, undefined, undefined).ping('')).to.eventually.be.rejected.then(error => {
+      expect(error[1]).to.equal(expectedError)
+    })
+  })
+
+  it('calls create', async function () {
+    // arrange
+    inject()
+    const tag = 'v0.0.24'
+    const expectedMessage = 'Spa create'
+    const create = sandbox.stub(Ansible.prototype, 'createSpaContainer').resolves([true, expectedMessage])
+    const deployService = new Deploy()
+
+    // assert
+    await expect(deployService.create(tag)).to.eventually.be.fulfilled.then(message => {
+      expect(message[1]).to.equal(expectedMessage)
+    })
+    sandbox.assert.called(create)
+
+  })
+
+  it('rejects with an error when docker is not injected properly for create', async function () {
+    // arrange
+    const expectedError = DEPLOY_ERRORS.PROPERTY_NOT_INJECTED('docker')
+
+    // assert
+    await expect(new Deploy(undefined, undefined, undefined).create('')).to.eventually.be.rejected.then(error => {
       expect(error[1]).to.equal(expectedError)
     })
   })

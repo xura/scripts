@@ -46,7 +46,7 @@
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--grep",
-                "calls destroyDeployments"
+                "outputs an error when a rejection occurs within destroyDeployments"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

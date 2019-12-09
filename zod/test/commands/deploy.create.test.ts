@@ -2,24 +2,22 @@ import 'reflect-metadata'
 import sinon from 'sinon'
 import chai from 'chai'
 import cap from 'chai-as-promised'
-import { test } from '@oclif/test'
+import { test, expect } from '@oclif/test'
 
 import Deploy from '../../src/services/deploy'
-import * as response from '../../src/core/color'
-import { Environment } from '../../src/interfaces/config'
+import * as color from '../../src/core/color'
 
 const sandbox = sinon.createSandbox()
 
 describe('deploy:create command', () => {
     let create: any
     let ping: any
+    let errorMessage: any;
 
     beforeEach(() => {
         chai.should()
         chai.use(cap)
-        create = sandbox.stub(Deploy.prototype, 'create').resolves([true, ''])
-        ping = sandbox.stub(Deploy.prototype, 'ping').resolves([true, ''])
-        sandbox.stub(response, 'blue')
+        sandbox.stub(color, 'blue')
         sandbox.stub(console, 'log')
     })
 
@@ -28,9 +26,19 @@ describe('deploy:create command', () => {
     })
 
     test
+        .stub(Deploy.prototype, 'create', sandbox.stub().withArgs(sinon.match.any, sinon.match.any).resolves([true, '']))
+        .stub(Deploy.prototype, 'ping', sandbox.stub().resolves([true, '']))
         .command(['deploy:create', 'v0.0.24'])
         .it('runs deploy:create', () => {
-            sandbox.assert.called(create)
-            sandbox.assert.called(ping)
+            expect((Deploy.prototype.create as any).called).to.equal(true)
+            expect((Deploy.prototype.ping as any).called).to.equal(true)
+        })
+
+    test
+        .stub(Deploy.prototype, 'create', sandbox.stub().rejects([true, '']))
+        .stub(color, 'error', sandbox.stub())
+        .command(['deploy:create', 'v0.0.24'])
+        .it('outputs an error when a rejection occurs', () => {
+            expect((color.error as any).called).to.equal(true)
         })
 })

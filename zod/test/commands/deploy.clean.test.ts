@@ -1,14 +1,12 @@
 import 'reflect-metadata'
 import sinon from 'sinon'
-import chai from 'chai'
+import chai, { expect } from 'chai'
 import cap from 'chai-as-promised'
 import { test } from '@oclif/test'
 
 import Deploy from '../../src/services/deploy'
-import * as response from '../../src/core/color'
+import * as color from '../../src/core/color'
 import { Environment } from '../../src/interfaces/config'
-import Clean from '../../src/commands/deploy/clean'
-import { IConfig } from '@oclif/config'
 
 const sandbox = sinon.createSandbox()
 
@@ -17,11 +15,11 @@ describe('deploy:clean command', () => {
   let success: sinon.SinonStub<[string], string>
 
   beforeEach(() => {
-    chai.should()
-    chai.use(cap)
-    sandbox.stub(Deploy.prototype, 'destroyDeployments').resolves([true, 'Destroyed successfully'])
-    deploy = sandbox.stub(Deploy.prototype, 'clean').resolves([true, []])
-    success = sandbox.stub(response, 'success')
+    // chai.should()
+    // chai.use(cap)
+    // sandbox.stub(Deploy.prototype, 'destroyDeployments').resolves([true, 'Destroyed successfully'])
+    // deploy = sandbox.stub(Deploy.prototype, 'clean').resolves([true, []])
+    // success = sandbox.stub(response, 'success')
     sandbox.stub(console, 'log')
   })
 
@@ -30,9 +28,39 @@ describe('deploy:clean command', () => {
   })
 
   test
+    .stub(Deploy.prototype, 'clean', sandbox.stub().resolves([true, '']))
+    .stub(Deploy.prototype, 'destroyDeployments', sandbox.stub().resolves([true, '']))
+    .stub(color, 'success', sandbox.stub())
     .command(['deploy:clean', 'staging'])
     .it('runs deploy:clean', () => {
-      sandbox.assert.called(deploy)
-      sandbox.assert.called(success)
+      expect((Deploy.prototype.clean as any).called).to.equal(true)
+      expect((Deploy.prototype.destroyDeployments as any).called).to.equal(true)
+      expect((color.success as any).called).to.equal(true)
+    })
+
+  test
+    .stub(Deploy.prototype, 'clean', sandbox.stub().rejects([true, '']))
+    .stub(color, 'error', sandbox.stub())
+    .command(['deploy:clean', 'staging'])
+    .it('outputs an error when a rejection occurs', () => {
+      expect((color.error as any).called).to.equal(true)
+    })
+
+  test
+    .stub(Deploy.prototype, 'clean', sandbox.stub().resolves([true, '']))
+    .stub(Deploy.prototype, 'destroyDeployments', sandbox.stub().rejects([true, '']))
+    .stub(color, 'error', sandbox.stub())
+    .command(['deploy:clean', 'staging'])
+    .it('outputs an error when a rejection occurs within destroyDeployments', ctx => {
+      expect((color.error as any).called).to.equal(true)
+    })
+
+  test
+    .stub(Deploy.prototype, 'clean', sandbox.stub().resolves([true, '']))
+    .stub(Deploy.prototype, 'destroyDeployments', sandbox.stub().rejects(new Error()))
+    .stub(color, 'error', sandbox.stub())
+    .command(['deploy:clean', 'staging'])
+    .it('outputs an error when a rejection occurs within destroyDeployments', ctx => {
+      expect((color.error as any).called).to.equal(true)
     })
 })

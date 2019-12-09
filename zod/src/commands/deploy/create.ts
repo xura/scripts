@@ -29,7 +29,9 @@ export default class Create extends Command {
             .create(args.tag)
             .then(([success, url]) => deployer.ping(url))
             .then(([success, url]) => this.log(blue(terminalLink(args.tag, url))))
-            .catch(error => this.log(err(error[1] ? error[1] : error.toString())))
+            .catch(error => {
+                this.log(err(error[1] ? error[1] : error.toString()))
+            })
     }
 }
 

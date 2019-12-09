@@ -10,3 +10,4 @@
 /src/core/ansible/staging.retry
 node_modules
 .env
+/coverage

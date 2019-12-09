@@ -23,12 +23,10 @@ export default class implements Cdn {
   private _bucketName: string;
   private _project: string;
 
-  constructor(@inject('Config') private _config?: Config) {
-    if (!this._config)
-      throw Error(CDN_ERRORS.PROPERTY_NOT_INJECTED('config'))
+  constructor(@inject('Config') private _config: Config = {} as Config) {
 
-    this._bucketName = this._config.get('DIGITAL_OCEAN_BUCKET_NAME')
-    this._project = this._config.get('PROJECT')
+    this._bucketName = this._config?.get('DIGITAL_OCEAN_BUCKET_NAME')
+    this._project = this._config?.get('PROJECT')
   }
 
   private _s3 = new S3({
