@@ -7,7 +7,7 @@ export default class Clean extends Command {
   static description = 'remove all but stickied and the most recent 3 (or provided) deployments'
 
   static examples = [
-    '$ zod deploy:clean --env=staging ',
+    '$ zod deploy:clean staging 3',
   ]
 
   static flags = {
@@ -27,11 +27,13 @@ export default class Clean extends Command {
 
   async run() {
     const {args} = this.parse(Clean)
+    const deployer = new Deploy()
 
-    await new Deploy()
+    await deployer
     .clean(args.keep, args.env)
+    .then(([_, deletedDeployments]) => deployer.destroyDeployments(deletedDeployments))
     .then(response => this.log(success(response[1])))
-    .catch(error => this.log(err(error[1])))
+    .catch(error => this.log(err(error[1] ? error[1] : error.toString())))
   }
 }
 

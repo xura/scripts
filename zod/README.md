@@ -41,7 +41,7 @@ USAGE
 
 ARGUMENTS
   ENV   environment to clean up
-  KEEP  [default: 3] keep this many deployments sorted by deployment date (last modified)
+  KEEP  [default: 1] keep this many deployments sorted by deployment date (last modified)
 
 OPTIONS
   -h, --help  how do I clean the phantom zone!

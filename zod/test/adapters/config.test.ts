@@ -2,11 +2,11 @@ import chai, {expect} from 'chai'
 import sinon from 'sinon'
 import cap from 'chai-as-promised'
 
-import Config from '../../src/services/config'
+import Config from '../../src/adapters/config'
 
 const sandbox = sinon.createSandbox()
 
-describe('Config service', () => {
+describe('Config adapter', () => {
   beforeEach(() => {
     chai.should()
     chai.use(cap)

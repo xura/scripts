@@ -12,7 +12,8 @@
         "no-restricted-imports": "off",
         "no-useless-constructor": "off",
         "prefer-promise-reject-errors": "off",
-        "new-cap": "off"
+        "new-cap": "off",
+        "no-console": "off"
       }
     }
   ]
