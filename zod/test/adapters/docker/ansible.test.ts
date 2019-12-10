@@ -2,13 +2,12 @@ import 'reflect-metadata'
 import sinon from 'sinon'
 import cap from 'chai-as-promised'
 
-import {AnsiblePlaybook} from 'ansible-playbook-cli-js'
-import Ansible, {ANSIBLE_MESSAGES} from '../../../src/adapters/docker/ansible'
+import { AnsiblePlaybook } from 'ansible-playbook-cli-js'
+import Ansible, { ANSIBLE_MESSAGES } from '../../../src/adapters/docker/ansible'
 import * as AnsibleAdapter from '../../../src/adapters/docker/ansible'
 import Config from '../../../src/adapters/config'
-import {inject} from '../../../src/hooks/init/init'
-import chai, {expect} from 'chai'
-import * as color from '../../../src/core/color'
+import { inject } from '../../../src/hooks/init/init'
+import chai, { expect } from 'chai'
 
 const sandbox = sinon.createSandbox()
 
@@ -19,10 +18,6 @@ describe('Ansible adapter', () => {
     chai.use(cap)
     sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     sandbox.stub(console, 'log')
-    sandbox.stub(color, 'error')
-    sandbox.stub(color, 'warn')
-    sandbox.stub(color, 'success')
-    sandbox.stub(color, 'blue')
   })
 
   afterEach(() => {
