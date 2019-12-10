@@ -1,9 +1,10 @@
-import {Docker} from '../../interfaces/docker'
-import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
+import { Docker } from '../../interfaces/docker'
+import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js'
 import path from 'path'
-import {inject, autoInjectable} from 'tsyringe'
-import {Config} from '../../interfaces/config'
-import {success, warn} from '../../core/color'
+import fs from 'fs';
+import { inject, autoInjectable } from 'tsyringe'
+import { Config } from '../../interfaces/config'
+import { success, warn } from '../../core/color'
 
 export const ANSIBLE_MESSAGES = {
   STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
@@ -11,6 +12,10 @@ export const ANSIBLE_MESSAGES = {
   ATTEMPTING_TO_DESTROY_DEPLOYMENTS: (stagingUrls: string) => `Attempting to destroy containers and SSL certs for the following deployments: ${stagingUrls}...`,
   DEPLOYMENTS_DESTROYED: (stagingUrlsDescriptor: string) => `The following deployments no longer have staging URLs: ${stagingUrlsDescriptor}`,
 }
+
+const ansibleDir = path.resolve(path.join(__dirname, '../../core/ansible'))
+const inventory = path.resolve(path.join(ansibleDir, '/xura'))
+const privateKey = path.resolve(path.join(ansibleDir, '/droplet4'))
 
 @autoInjectable()
 export default class implements Docker {
@@ -23,8 +28,16 @@ export default class implements Docker {
   private _stagingCertsDir: string = this._config.get('STAGING_CERTS_DIR')
 
   private _playbook = new AnsiblePlaybook(
-    new Options(path.resolve(path.join(__dirname, '../../core/ansible')))
+    new Options(ansibleDir)
   );
+
+  private _fileExists = async (path: string) => !!(await fs.promises.stat(path).catch(e => false));
+
+  private _privateKey =
+    async () => await this._fileExists(privateKey) ? privateKey : this._config.get('ANSIBLE_PRIVATE_KEY')
+
+  private _inventory =
+    async () => await this._fileExists(inventory) ? inventory : this._config.get('ANSIBLE_INVENTORY')
 
   private _removePeriods = (name: string) => `${name.replace(/\./g, '')}`
 
@@ -42,12 +55,13 @@ export default class implements Docker {
     const indexHtmlCdnUrl = `${this._cdnStagingUrl}/${this._project}/${name}/index.html`
 
     const ansibleExtraVars = JSON.stringify({
+      ansible_ssh_private_key_file: await this._privateKey(),
       containerName: stagingUrl,
       stagingHtdocs,
       indexHtmlCdnUrl,
       network: this._config.get('STAGING_DOCKER_NETWORK'),
     })
-    const command = `staging.yml -i xura --extra-vars '${ansibleExtraVars}' --tags create-spa`
+    const command = `staging.yml -i ${await this._inventory()} --extra-vars '${ansibleExtraVars}' --tags create-spa`
 
     try {
       console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_CREATE_STAGING_URL(stagingUrl)))
@@ -71,12 +85,13 @@ export default class implements Docker {
       names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
 
     const ansibleExtraVars = JSON.stringify({
+      ansible_ssh_private_key_file: await this._privateKey(),
       containerNames: stagingUrls,
       stagingHtdocs,
       certsFilesAndFolders,
       certDirs,
     })
-    const command = `staging.yml -i xura --extra-vars '${ansibleExtraVars}' --tags destroy-multiple-spas`
+    const command = `staging.yml -i ${await this._inventory()} --extra-vars '${ansibleExtraVars}' --tags destroy-multiple-spas`
 
     try {
       console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_DESTROY_DEPLOYMENTS(stagingUrlsDescriptor)))
