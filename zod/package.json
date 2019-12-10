@@ -1,6 +1,6 @@
 {
   "name": "zod",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "author": "Joe Badaczewski @joe307bad",
   "description": "DevOps courtesy of General Dru-Zod",
   "bin": {

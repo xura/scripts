@@ -19,7 +19,7 @@ $ npm install -g zod
 $ zod COMMAND
 running command...
 $ zod (-v|--version|version)
-zod/0.0.0 darwin-x64 node-v10.16.0
+zod/1.0.0 darwin-x64 node-v10.16.0
 $ zod --help [COMMAND]
 USAGE
   $ zod COMMAND
@@ -29,6 +29,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`zod deploy:clean ENV [KEEP]`](#zod-deployclean-env-keep)
+* [`zod deploy:create TAG`](#zod-deploycreate-tag)
 * [`zod help [COMMAND]`](#zod-help-command)
 
 ## `zod deploy:clean ENV [KEEP]`
@@ -47,10 +48,30 @@ OPTIONS
   -h, --help  how do I clean the phantom zone!
 
 EXAMPLE
-  $ zod deploy:clean --env=staging
+  $ zod deploy:clean staging 3
 ```
 
-_See code: [src/commands/deploy/clean.ts](https://github.com/xura/scripts/blob/v0.0.0/src/commands/deploy/clean.ts)_
+_See code: [src/commands/deploy/clean.ts](https://github.com/xura/scripts/blob/v1.0.0/src/commands/deploy/clean.ts)_
+
+## `zod deploy:create TAG`
+
+create a deployment named after the given tag
+
+```
+USAGE
+  $ zod deploy:create TAG
+
+ARGUMENTS
+  TAG  tag to use to name the container and connect it to a subdomain
+
+OPTIONS
+  -h, --help  how do I deploy a Kryptonian container
+
+EXAMPLE
+  $ zod deploy:create v0.0.24
+```
+
+_See code: [src/commands/deploy/create.ts](https://github.com/xura/scripts/blob/v1.0.0/src/commands/deploy/create.ts)_
 
 ## `zod help [COMMAND]`
 
