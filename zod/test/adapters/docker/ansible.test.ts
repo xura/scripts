@@ -4,9 +4,11 @@ import cap from 'chai-as-promised'
 
 import {AnsiblePlaybook} from 'ansible-playbook-cli-js'
 import Ansible, {ANSIBLE_MESSAGES} from '../../../src/adapters/docker/ansible'
+import * as AnsibleAdapter from '../../../src/adapters/docker/ansible'
 import Config from '../../../src/adapters/config'
 import {inject} from '../../../src/hooks/init/init'
 import chai, {expect} from 'chai'
+import * as color from '../../../src/core/color'
 
 const sandbox = sinon.createSandbox()
 
@@ -17,6 +19,10 @@ describe('Ansible adapter', () => {
     chai.use(cap)
     sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     sandbox.stub(console, 'log')
+    sandbox.stub(color, 'error')
+    sandbox.stub(color, 'warn')
+    sandbox.stub(color, 'success')
+    sandbox.stub(color, 'blue')
   })
 
   afterEach(() => {
@@ -95,5 +101,19 @@ describe('Ansible adapter', () => {
 
     // assert
     expect(message).to.eq(expectedMessage)
+  })
+
+  it('calls _privateKey & _inventory properly', async function () {
+    // arrange
+    sandbox.replace(AnsibleAdapter, 'inventory', 'file-doesnt-exist')
+    sandbox.replace(AnsibleAdapter, 'privateKey', 'file-doesnt-exist')
+    const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves()
+    const commandArgs = 'staging.yml -i ENV_VARIABLE --extra-vars \'{"ansible_ssh_private_key_file":"ENV_VARIABLE","containerName":"v0024.ENV_VARIABLE.ENV_VARIABLE","stagingHtdocs":"ENV_VARIABLE/ENV_VARIABLE/v0.0.24","indexHtmlCdnUrl":"ENV_VARIABLE/ENV_VARIABLE/v0.0.24/index.html","network":"ENV_VARIABLE"}\' --tags create-spa'
+
+    // act
+    await new Ansible().createSpaContainer('v0.0.24')
+
+    // assert
+    sandbox.assert.calledWith(command, commandArgs)
   })
 })

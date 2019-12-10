@@ -1,10 +1,10 @@
-import { Docker } from '../../interfaces/docker'
-import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js'
+import {Docker} from '../../interfaces/docker'
+import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
 import path from 'path'
-import fs from 'fs';
-import { inject, autoInjectable } from 'tsyringe'
-import { Config } from '../../interfaces/config'
-import { success, warn } from '../../core/color'
+import fs from 'fs'
+import {inject, autoInjectable} from 'tsyringe'
+import {Config} from '../../interfaces/config'
+import {success, warn} from '../../core/color'
 
 export const ANSIBLE_MESSAGES = {
   STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
@@ -13,9 +13,9 @@ export const ANSIBLE_MESSAGES = {
   DEPLOYMENTS_DESTROYED: (stagingUrlsDescriptor: string) => `The following deployments no longer have staging URLs: ${stagingUrlsDescriptor}`,
 }
 
-const ansibleDir = path.resolve(path.join(__dirname, '../../core/ansible'))
-const inventory = path.resolve(path.join(ansibleDir, '/xura'))
-const privateKey = path.resolve(path.join(ansibleDir, '/droplet4'))
+export const ansibleDir = path.resolve(path.join(__dirname, '../../core/ansible'))
+export const inventory = path.resolve(path.join(ansibleDir, '/xura'))
+export const privateKey = path.resolve(path.join(ansibleDir, '/droplet4'))
 
 @autoInjectable()
 export default class implements Docker {
@@ -31,7 +31,7 @@ export default class implements Docker {
     new Options(ansibleDir)
   );
 
-  private _fileExists = async (path: string) => !!(await fs.promises.stat(path).catch(e => false));
+  private _fileExists = async (path: string) => Boolean(await fs.promises.stat(path).catch(_ => false));
 
   private _privateKey =
     async () => await this._fileExists(privateKey) ? privateKey : this._config.get('ANSIBLE_PRIVATE_KEY')
