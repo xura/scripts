@@ -58,7 +58,7 @@
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--grep",
-                "calls _privateKey & _inventory properly"
+                "calls _privateKey & _inventory properly when giving existant files"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

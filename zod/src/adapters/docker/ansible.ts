@@ -31,7 +31,7 @@ export default class implements Docker {
     new Options(ansibleDir)
   );
 
-  private _fileExists = (file: string) => new Promise(resolve => {
+  private _fileExists = (file: string): Promise<boolean> => new Promise(resolve => {
     fs.stat(file, err => {
       if (err === null) {
         resolve(true)
