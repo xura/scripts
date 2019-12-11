@@ -41,11 +41,9 @@ export default class implements Docker {
     })
   })
 
-  private _privateKey =
-    async () => await this._fileExists(privateKey) ? privateKey : this._config.get('ANSIBLE_PRIVATE_KEY')
+  private _privateKey = async () => await this._fileExists(privateKey) ? privateKey : this._config.get('ANSIBLE_PRIVATE_KEY')
 
-  private _inventory =
-    async () => await this._fileExists(inventory) ? inventory : this._config.get('ANSIBLE_INVENTORY')
+  private _inventory = async () => await this._fileExists(inventory) ? inventory : this._config.get('ANSIBLE_INVENTORY')
 
   private _removePeriods = (name: string) => `${name.replace(/\./g, '')}`
 
