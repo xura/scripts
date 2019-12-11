@@ -1,10 +1,10 @@
-import { Docker } from '../../interfaces/docker'
-import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js'
+import {Docker} from '../../interfaces/docker'
+import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
 import path from 'path'
 import fs from 'fs'
-import { inject, autoInjectable } from 'tsyringe'
-import { Config } from '../../interfaces/config'
-import { success, warn } from '../../core/color'
+import {inject, autoInjectable} from 'tsyringe'
+import {Config} from '../../interfaces/config'
+import {success, warn} from '../../core/color'
 
 export const ANSIBLE_MESSAGES = {
   STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
@@ -85,13 +85,13 @@ export default class implements Docker {
       names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
 
     const ansibleExtraVars = JSON.stringify({
-      ansible_ssh_private_key_file: await this._privateKey(),
+      ansible_ssh_private_key_file: privateKey,
       containerNames: stagingUrls,
       stagingHtdocs,
       certsFilesAndFolders,
       certDirs,
     })
-    const command = `staging.yml -i ${await this._inventory()} --extra-vars '${ansibleExtraVars}' --tags destroy-multiple-spas`
+    const command = `staging.yml -i ${inventory} --extra-vars '${ansibleExtraVars}' --tags destroy-multiple-spas`
 
     try {
       console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_DESTROY_DEPLOYMENTS(stagingUrlsDescriptor)))
