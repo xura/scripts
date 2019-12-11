@@ -48,7 +48,7 @@
     "husky": "^3.1.0",
     "mocha": "^6.2.2",
     "nock": "^11.7.0",
-    "nyc": "^15.0.0-beta.3",
+    "nyc": "14.1.1",
     "sinon": "^7.5.0",
     "source-map-support": "^0.5.16",
     "sync-dotenv": "^2.3.0",
