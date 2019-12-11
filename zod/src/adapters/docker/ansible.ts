@@ -1,10 +1,10 @@
-import { Docker } from '../../interfaces/docker'
-import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js'
+import {Docker} from '../../interfaces/docker'
+import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
 import path from 'path'
 import fs from 'fs'
-import { inject, autoInjectable } from 'tsyringe'
-import { Config } from '../../interfaces/config'
-import { success, warn } from '../../core/color'
+import {inject, autoInjectable} from 'tsyringe'
+import {Config} from '../../interfaces/config'
+import {success, warn} from '../../core/color'
 
 export const ANSIBLE_MESSAGES = {
   STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
@@ -31,21 +31,21 @@ export default class implements Docker {
     new Options(ansibleDir)
   );
 
-  private _fileExists = async (file: string) => await new Promise(resolve => {
-    fs.stat(file, (err, stat) => {
-      if (err == null) {
+  private _fileExists = (file: string) => new Promise(resolve => {
+    fs.stat(file, err => {
+      if (err === null) {
         resolve(true)
-      } else if (err.code == 'ENOENT') {
+      } else {
         resolve(false)
       }
     })
   })
 
-  // private _privateKey =
-  //   async () => await this._fileExists(privateKey) ? privateKey : this._config.get('ANSIBLE_PRIVATE_KEY')
+  private _privateKey =
+    async () => await this._fileExists(privateKey) ? privateKey : this._config.get('ANSIBLE_PRIVATE_KEY')
 
-  // private _inventory =
-  //   async () => await this._fileExists(inventory) ? inventory : this._config.get('ANSIBLE_INVENTORY')
+  private _inventory =
+    async () => await this._fileExists(inventory) ? inventory : this._config.get('ANSIBLE_INVENTORY')
 
   private _removePeriods = (name: string) => `${name.replace(/\./g, '')}`
 
@@ -63,13 +63,13 @@ export default class implements Docker {
     const indexHtmlCdnUrl = `${this._cdnStagingUrl}/${this._project}/${name}/index.html`
 
     const ansibleExtraVars = JSON.stringify({
-      ansible_ssh_private_key_file: privateKey,
+      ansible_ssh_private_key_file: await this._privateKey(),
       containerName: stagingUrl,
       stagingHtdocs,
       indexHtmlCdnUrl,
       network: this._config.get('STAGING_DOCKER_NETWORK'),
     })
-    const command = `staging.yml -i ${inventory} --extra-vars '${ansibleExtraVars}' --tags create-spa`
+    const command = `staging.yml -i ${await this._inventory()} --extra-vars '${ansibleExtraVars}' --tags create-spa`
 
     try {
       console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_CREATE_STAGING_URL(stagingUrl)))
@@ -93,13 +93,13 @@ export default class implements Docker {
       names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
 
     const ansibleExtraVars = JSON.stringify({
-      ansible_ssh_private_key_file: privateKey,
+      ansible_ssh_private_key_file: await this._privateKey(),
       containerNames: stagingUrls,
       stagingHtdocs,
       certsFilesAndFolders,
       certDirs,
     })
-    const command = `staging.yml -i ${inventory} --extra-vars '${ansibleExtraVars}' --tags destroy-multiple-spas`
+    const command = `staging.yml -i ${await this._inventory()} --extra-vars '${ansibleExtraVars}' --tags destroy-multiple-spas`
 
     try {
       console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_DESTROY_DEPLOYMENTS(stagingUrlsDescriptor)))
