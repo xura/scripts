@@ -10,7 +10,9 @@ export type ConfigKey =
     | 'STAGING_DOCKER_NETWORK'
     | 'STAGING_URL'
     | 'CDN_STAGING_URL'
-    | 'STAGING_CERTS_DIR';
+    | 'STAGING_CERTS_DIR'
+    | 'ANSIBLE_PRIVATE_KEY'
+    | 'ANSIBLE_INVENTORY';
 
 export type Environment = 'staging' | 'production';
 
