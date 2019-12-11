@@ -1,10 +1,10 @@
-import {Docker} from '../../interfaces/docker'
-import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
+import { Docker } from '../../interfaces/docker'
+import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js'
 import path from 'path'
 import fs from 'fs'
-import {inject, autoInjectable} from 'tsyringe'
-import {Config} from '../../interfaces/config'
-import {success, warn} from '../../core/color'
+import { inject, autoInjectable } from 'tsyringe'
+import { Config } from '../../interfaces/config'
+import { success, warn } from '../../core/color'
 
 export const ANSIBLE_MESSAGES = {
   STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
@@ -20,36 +20,19 @@ export const privateKey = path.resolve(path.join(ansibleDir, '/droplet4'))
 @autoInjectable()
 export default class implements Docker {
   private _project: string = this._config.get('PROJECT')
-
   private _stagingUrl: string = this._config.get('STAGING_URL')
-
   private _cdnStagingUrl: string = this._config.get('CDN_STAGING_URL')
-
   private _stagingCertsDir: string = this._config.get('STAGING_CERTS_DIR')
-
-  private _playbook = new AnsiblePlaybook(
-    new Options(ansibleDir)
-  );
-
-  private _fileExists = (file: string): Promise<boolean> => new Promise(resolve => {
-    fs.stat(file, err => {
-      if (err === null) {
-        resolve(true)
-      } else {
-        resolve(false)
-      }
-    })
-  })
-
-  private _privateKey = async () => await this._fileExists(privateKey) ? privateKey : this._config.get('ANSIBLE_PRIVATE_KEY')
-
-  private _inventory = async () => await this._fileExists(inventory) ? inventory : this._config.get('ANSIBLE_INVENTORY')
-
+  private _playbook = new AnsiblePlaybook(new Options(ansibleDir));
+  private _fileExists = (file: string): Promise<boolean> =>
+    new Promise(resolve => fs.stat(file, err => err === null ? resolve(true) : resolve(false)))
+  private _privateKey = async () =>
+    await this._fileExists(privateKey) ? privateKey : this._config.get('ANSIBLE_PRIVATE_KEY')
+  private _inventory = async () =>
+    await this._fileExists(inventory) ? inventory : this._config.get('ANSIBLE_INVENTORY')
   private _removePeriods = (name: string) => `${name.replace(/\./g, '')}`
-
   private _spaContainerName = (name: string) =>
     `${this._removePeriods(name)}.${this._project}.${this._stagingUrl}`
-
   private _spaHtDocs = (name: string) =>
     `${this._config.get('STAGING_HTDOCS')}/${this._project}/${name}`
 
