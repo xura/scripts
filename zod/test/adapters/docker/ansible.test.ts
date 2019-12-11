@@ -2,12 +2,12 @@ import 'reflect-metadata'
 import sinon from 'sinon'
 import cap from 'chai-as-promised'
 
-import {AnsiblePlaybook} from 'ansible-playbook-cli-js'
-import Ansible, {ANSIBLE_MESSAGES} from '../../../src/adapters/docker/ansible'
-import * as AnsibleAdapter from '../../../src/adapters/docker/ansible'
+import { AnsiblePlaybook } from 'ansible-playbook-cli-js'
+import Ansible, { ANSIBLE_MESSAGES } from '../../../src/adapters/docker/ansible'
+// import * as AnsibleAdapter from '../../../src/adapters/docker/ansible'
 import Config from '../../../src/adapters/config'
-import {inject} from '../../../src/hooks/init/init'
-import chai, {expect} from 'chai'
+import { inject } from '../../../src/hooks/init/init'
+import chai, { expect } from 'chai'
 
 const sandbox = sinon.createSandbox()
 

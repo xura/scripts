@@ -1,10 +1,10 @@
-import {Docker} from '../../interfaces/docker'
-import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
+import { Docker } from '../../interfaces/docker'
+import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js'
 import path from 'path'
 import fs from 'fs'
-import {inject, autoInjectable} from 'tsyringe'
-import {Config} from '../../interfaces/config'
-import {success, warn} from '../../core/color'
+import { inject, autoInjectable } from 'tsyringe'
+import { Config } from '../../interfaces/config'
+import { success, warn } from '../../core/color'
 
 export const ANSIBLE_MESSAGES = {
   STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
@@ -31,7 +31,15 @@ export default class implements Docker {
     new Options(ansibleDir)
   );
 
-  private _fileExists = async (path: string) => Boolean(await fs.promises.stat(path).catch(_ => false));
+  private _fileExists = async (file: string) => await new Promise(resolve => {
+    fs.stat(file, (err, stat) => {
+      if (err == null) {
+        resolve(true)
+      } else if (err.code == 'ENOENT') {
+        resolve(false)
+      }
+    })
+  })
 
   // private _privateKey =
   //   async () => await this._fileExists(privateKey) ? privateKey : this._config.get('ANSIBLE_PRIVATE_KEY')
