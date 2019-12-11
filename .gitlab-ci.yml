@@ -26,6 +26,7 @@ Test:
   stage: Test
   script:
     - cd zod
+    - yarn install
     - mv .env.example .env
     - yarn test
 
