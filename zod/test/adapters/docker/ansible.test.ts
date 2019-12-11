@@ -98,17 +98,17 @@ describe('Ansible adapter', () => {
     expect(message).to.eq(expectedMessage)
   })
 
-  it('calls _privateKey & _inventory properly', async function () {
-    // arrange
-    sandbox.replace(AnsibleAdapter, 'inventory', 'file-doesnt-exist')
-    sandbox.replace(AnsibleAdapter, 'privateKey', 'file-doesnt-exist')
-    const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves()
-    const commandArgs = 'staging.yml -i ENV_VARIABLE --extra-vars \'{"ansible_ssh_private_key_file":"ENV_VARIABLE","containerName":"v0024.ENV_VARIABLE.ENV_VARIABLE","stagingHtdocs":"ENV_VARIABLE/ENV_VARIABLE/v0.0.24","indexHtmlCdnUrl":"ENV_VARIABLE/ENV_VARIABLE/v0.0.24/index.html","network":"ENV_VARIABLE"}\' --tags create-spa'
+  // it('calls _privateKey & _inventory properly', async function () {
+  //   // arrange
+  //   sandbox.replace(AnsibleAdapter, 'inventory', 'file-doesnt-exist')
+  //   sandbox.replace(AnsibleAdapter, 'privateKey', 'file-doesnt-exist')
+  //   const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves()
+  //   const commandArgs = 'staging.yml -i ENV_VARIABLE --extra-vars \'{"ansible_ssh_private_key_file":"ENV_VARIABLE","containerName":"v0024.ENV_VARIABLE.ENV_VARIABLE","stagingHtdocs":"ENV_VARIABLE/ENV_VARIABLE/v0.0.24","indexHtmlCdnUrl":"ENV_VARIABLE/ENV_VARIABLE/v0.0.24/index.html","network":"ENV_VARIABLE"}\' --tags create-spa'
 
-    // act
-    await new Ansible().createSpaContainer('v0.0.24')
+  //   // act
+  //   await new Ansible().createSpaContainer('v0.0.24')
 
-    // assert
-    sandbox.assert.calledWith(command, commandArgs)
-  })
+  //   // assert
+  //   sandbox.assert.calledWith(command, commandArgs)
+  // })
 })
