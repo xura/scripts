@@ -34,6 +34,7 @@ Upload tarbells:
   #   variables:
   #     - $CI_COMMIT_REF_NAME == "master"
   script:
+    - tar --version
     - cd zod
     - yarn install
     - apt-get update
