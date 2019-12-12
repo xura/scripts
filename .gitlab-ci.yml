@@ -42,6 +42,7 @@ Upload tarbells:
     - oclif-dev pack --no-xz --targets=
     - mv ./dist/zod* ./dist/zod
     - mv ./.env.example ./dist/zod/env
+    - mv ./src/core/ansible ./dist/zod/lib/core/ansible
     - cd dist/zod
     - rename 's/zod-(v)(\d+\.)(\d+\.)(\d+)/zod/gi' *.tar.gz
     - gem install dpl
