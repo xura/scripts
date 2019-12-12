@@ -101,8 +101,8 @@ describe('Ansible adapter', () => {
 
   it('calls _privateKey & _inventory properly when given nonexistant files', async function () {
     // arrange
-    sandbox.replace(AnsibleAdapter, 'inventory', 'file-does-not-exist')
-    sandbox.replace(AnsibleAdapter, 'privateKey', 'file-does-not-exist')
+    sandbox.replace(AnsibleAdapter, 'inventoryPath', 'file-does-not-exist')
+    sandbox.replace(AnsibleAdapter, 'privateKeyPath', 'file-does-not-exist')
     const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves()
     const commandArgs = 'staging.yml -i ENV_VARIABLE --extra-vars \'{"ansible_ssh_private_key_file":"ENV_VARIABLE","containerName":"v0024.ENV_VARIABLE.ENV_VARIABLE","stagingHtdocs":"ENV_VARIABLE/ENV_VARIABLE/v0.0.24","indexHtmlCdnUrl":"ENV_VARIABLE/ENV_VARIABLE/v0.0.24/index.html","network":"ENV_VARIABLE"}\' --tags create-spa'
 
@@ -116,8 +116,8 @@ describe('Ansible adapter', () => {
   it('calls _privateKey & _inventory properly when giving existant files', async function () {
     // arrange
     sandbox.stub(fs, 'stat').yields(null)
-    sandbox.replace(AnsibleAdapter, 'inventory', 'file-exists')
-    sandbox.replace(AnsibleAdapter, 'privateKey', 'file-exists')
+    sandbox.replace(AnsibleAdapter, 'inventoryPath', 'file-exists')
+    sandbox.replace(AnsibleAdapter, 'privateKeyPath', 'file-exists')
     const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves()
     const commandArgs = 'staging.yml -i file-exists --extra-vars \'{"ansible_ssh_private_key_file":"file-exists","containerName":"v0024.ENV_VARIABLE.ENV_VARIABLE","stagingHtdocs":"ENV_VARIABLE/ENV_VARIABLE/v0.0.24","indexHtmlCdnUrl":"ENV_VARIABLE/ENV_VARIABLE/v0.0.24/index.html","network":"ENV_VARIABLE"}\' --tags create-spa'
 
