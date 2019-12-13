@@ -92,6 +92,7 @@ export default class implements Docker {
       return Promise.reject([false, playbookResponse[1]])
     }
 
+    console.log(success(playbookResponse[1]))
     console.log(success(ANSIBLE_MESSAGES.STAGING_URL_CREATED(stagingUrl)))
     console.log(success(playbookResponse[1]))
 
