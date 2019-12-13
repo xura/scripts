@@ -82,7 +82,7 @@ export default class implements Docker {
       try {
         console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_CREATE_STAGING_URL(stagingUrl)))
         const response = await this._playbook.command(command)
-        resolve([!response.includes(ansiblePlaybookFailureIndicator), response.data])
+        resolve([!response.data.includes(ansiblePlaybookFailureIndicator), response.data])
       } catch (error) {
         resolve([false, error])
       }
