@@ -22,6 +22,8 @@ export const ansiblePath = path.resolve(path.join(__dirname, '../../core/ansible
 export const inventoryPath = path.resolve(path.join(ansiblePath, '/xura'))
 export const privateKeyPath = path.resolve(path.join(ansiblePath, '/droplet4'))
 
+export const ansiblePlaybookFailureIndicator = 'FAILED!'
+
 @autoInjectable()
 export default class implements Docker {
   private _project: string = this._config.get('PROJECT')
@@ -76,14 +78,22 @@ export default class implements Docker {
     })
     const command = `staging.yml -i ${inventory} --extra-vars '${ansibleExtraVars}' --tags create-spa`
 
-    try {
-      console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_CREATE_STAGING_URL(stagingUrl)))
-      await this._playbook.command(command)
-    } catch (error) {
-      return Promise.reject([false, error])
+    const playbookResponse = await (() => new Promise<[boolean, string]>(async (resolve, _) => {
+      try {
+        console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_CREATE_STAGING_URL(stagingUrl)))
+        const response = await this._playbook.command(command)
+        resolve([!response.includes(ansiblePlaybookFailureIndicator), response.data])
+      } catch (error) {
+        resolve([false, error])
+      }
+    }))()
+
+    if (!playbookResponse[0]) {
+      return Promise.reject([false, playbookResponse[1]])
     }
 
     console.log(success(ANSIBLE_MESSAGES.STAGING_URL_CREATED(stagingUrl)))
+    console.log(success(playbookResponse[1]))
 
     return Promise.resolve([true, stagingUrl])
   }
