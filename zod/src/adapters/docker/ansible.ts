@@ -79,8 +79,7 @@ export default class implements Docker {
       try {
         console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_CREATE_STAGING_URL(stagingUrl)))
         const response = await this._playbook.command(command)
-        console.log(warn(JSON.stringify(response)))
-        resolve([!response.data.includes(ansiblePlaybookFailureIndicator), response.data])
+        resolve([!response.raw.includes(ansiblePlaybookFailureIndicator), response.raw])
       } catch (error) {
         resolve([false, error])
       }
@@ -113,6 +112,7 @@ export default class implements Docker {
       return Promise.reject([false, ANSIBLE_ERRORS.PRIVATE_KEY_OR_INVENTORY_NOT_FOUND(privateKey, inventory)])
 
     const ansibleExtraVars = JSON.stringify({
+
       ansible_ssh_private_key_file: privateKey,
       containerNames: stagingUrls,
       stagingHtdocs,
