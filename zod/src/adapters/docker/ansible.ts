@@ -1,11 +1,11 @@
-import {Docker} from '../../interfaces/docker'
-import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
+import { Docker } from '../../interfaces/docker'
+import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js'
 import path from 'path'
 import fs from 'fs'
-import {inject, autoInjectable} from 'tsyringe'
-import {Config} from '../../interfaces/config'
-import {success, warn} from '../../core/color'
-import {ENV_VARIABLE_NOT_FOUND} from '../config'
+import { inject, autoInjectable } from 'tsyringe'
+import { Config } from '../../interfaces/config'
+import { success, warn } from '../../core/color'
+import { ENV_VARIABLE_NOT_FOUND } from '../config'
 
 export const ANSIBLE_MESSAGES = {
   STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
@@ -26,7 +26,7 @@ export const ansiblePlaybookFailureIndicator = 'FAILED!'
 
 export enum ANSIBLE_COMMANDS {
   CREATE_SPA = 'create-spa',
-  DESTROY_MULTIPLE_SPAS = 'destroy_multiple_spas'
+  DESTROY_MULTIPLE_SPAS = 'destroy-multiple-spas'
 }
 
 @autoInjectable()

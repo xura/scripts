@@ -35,7 +35,6 @@ Upload tarbells:
       - $CI_COMMIT_REF_NAME == "master"
   script:
     - cd zod
-    - yarn install
     - apt-get update
     - apt-get install rename -y
     - yarn global add @oclif/dev-cli
