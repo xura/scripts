@@ -73,7 +73,7 @@ export default class implements Docker {
     const playbookResponse = await this._runAnsibleCommand(command)
 
     if (!playbookResponse[0])
-      Promise.reject(playbookResponse[1])
+      return Promise.reject(playbookResponse[1])
 
     console.log(playbookResponse[1])
     return Promise.resolve([!(playbookResponse[1].raw?.includes(ansiblePlaybookFailureIndicator) || false), playbookResponse[1].raw])
