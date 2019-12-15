@@ -80,9 +80,9 @@ export default class implements Docker {
   }
 
   private _runAnsibleCommand =
-    (command: string) => new Promise<[boolean, Record<string, any>]>((resolve, reject) => {
+    (command: string) => new Promise<[boolean, Record<string, any>]>(async (resolve, reject) => {
       try {
-        resolve([true, this._playbook.command(command)])
+        resolve([true, await this._playbook.command(command)])
       } catch (error) {
         reject([false, error])
       }
