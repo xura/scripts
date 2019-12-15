@@ -58,7 +58,7 @@
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--grep",
-                "calls _privateKey & _inventory properly when giving existant files"
+                "calls _playbook.command when calling destroySpaContainers"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
