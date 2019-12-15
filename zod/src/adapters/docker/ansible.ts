@@ -1,11 +1,11 @@
-import { Docker } from '../../interfaces/docker'
-import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js'
+import {Docker} from '../../interfaces/docker'
+import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
 import path from 'path'
 import fs from 'fs'
-import { inject, autoInjectable } from 'tsyringe'
-import { Config } from '../../interfaces/config'
-import { success, warn } from '../../core/color'
-import { ENV_VARIABLE_NOT_FOUND } from '../config'
+import {inject, autoInjectable} from 'tsyringe'
+import {Config} from '../../interfaces/config'
+import {success, warn} from '../../core/color'
+import {ENV_VARIABLE_NOT_FOUND} from '../config'
 
 export const ANSIBLE_MESSAGES = {
   STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
@@ -76,17 +76,17 @@ export default class implements Docker {
       return Promise.reject(playbookResponse[1])
 
     console.log(playbookResponse[1])
-    return Promise.resolve([!(playbookResponse[1].raw?.includes(ansiblePlaybookFailureIndicator) || false), playbookResponse[1].raw])
+    return Promise.resolve([!(playbookResponse[1]?.raw.includes(ansiblePlaybookFailureIndicator) || false), playbookResponse[1]?.raw])
   }
 
-  private _runAnsibleCommand =
-    (command: string) => new Promise<[boolean, Record<string, any>]>((resolve, reject) => {
+  private _runAnsibleCommand: (command: string) => Promise<[boolean, Record<string, any>]> =
+    async command => {
       try {
-        resolve([true, this._playbook.command(command)])
+        return Promise.resolve([true, await this._playbook.command(command)])
       } catch (error) {
-        reject([false, error])
+        return Promise.reject([false, error])
       }
-    })
+    }
 
   constructor(@inject('Config') private _config: Config = {} as Config) { }
 
