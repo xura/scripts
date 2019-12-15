@@ -1,11 +1,11 @@
-import { Docker } from '../../interfaces/docker'
-import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js'
+import {Docker} from '../../interfaces/docker'
+import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
 import path from 'path'
 import fs from 'fs'
-import { inject, autoInjectable } from 'tsyringe'
-import { Config } from '../../interfaces/config'
-import { success, warn } from '../../core/color'
-import { ENV_VARIABLE_NOT_FOUND } from '../config'
+import {inject, autoInjectable} from 'tsyringe'
+import {Config} from '../../interfaces/config'
+import {success, warn} from '../../core/color'
+import {ENV_VARIABLE_NOT_FOUND} from '../config'
 
 export const ANSIBLE_MESSAGES = {
   STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
@@ -23,6 +23,11 @@ export const inventoryPath = path.resolve(path.join(ansiblePath, '/xura'))
 export const privateKeyPath = path.resolve(path.join(ansiblePath, '/droplet4'))
 
 export const ansiblePlaybookFailureIndicator = 'FAILED!'
+
+export enum ANSIBLE_COMMANDS {
+  CREATE_SPA = 'create-spa',
+  DESTROY_MULTIPLE_SPAS = 'destroy_multiple_spas'
+}
 
 @autoInjectable()
 export default class implements Docker {
@@ -53,13 +58,7 @@ export default class implements Docker {
   private _spaHtDocs = (name: string) =>
     `${this._config.get('STAGING_HTDOCS')}/${this._project}/${name}`
 
-  constructor(@inject('Config') private _config: Config = {} as Config) { }
-
-  async createSpaContainer(name: string): Promise<[boolean, string]> {
-    const stagingUrl = this._spaContainerName(name)
-    const stagingHtdocs = this._spaHtDocs(name)
-    const indexHtmlCdnUrl = `${this._cdnStagingUrl}/${this._project}/${name}/index.html`
-
+  private async _executePlaybook(tag: string, extraVars: Record<string, any>): Promise<[boolean, string]> {
     const privateKey = await this._privateKey()
     const inventory = await this._inventory()
 
@@ -68,30 +67,48 @@ export default class implements Docker {
 
     const ansibleExtraVars = JSON.stringify({
       ansible_ssh_private_key_file: privateKey,
+      ...extraVars,
+    })
+    const command = `staging.yml -i ${inventory} --extra-vars '${ansibleExtraVars}' --tags ${tag}`
+    const playbookResponse = await this._runAnsibleCommand(command)
+
+    if (!playbookResponse[0])
+      Promise.reject(playbookResponse[1])
+
+    console.log(playbookResponse[1])
+    return Promise.resolve([!(playbookResponse[1].raw?.includes(ansiblePlaybookFailureIndicator) || false), playbookResponse[1].raw])
+  }
+
+  private _runAnsibleCommand =
+    (command: string) => new Promise<[boolean, Record<string, any>]>((resolve, reject) => {
+      try {
+        resolve([true, this._playbook.command(command)])
+      } catch (error) {
+        reject([false, error])
+      }
+    })
+
+  constructor(@inject('Config') private _config: Config = {} as Config) { }
+
+  async createSpaContainer(name: string): Promise<[boolean, string]> {
+    const stagingUrl = this._spaContainerName(name)
+    const stagingHtdocs = this._spaHtDocs(name)
+    const indexHtmlCdnUrl = `${this._cdnStagingUrl}/${this._project}/${name}/index.html`
+
+    console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_CREATE_STAGING_URL(stagingUrl)))
+
+    const playbookResponse = await this._executePlaybook(ANSIBLE_COMMANDS.CREATE_SPA, {
       containerName: stagingUrl,
       stagingHtdocs,
       indexHtmlCdnUrl,
       network: this._config.get('STAGING_DOCKER_NETWORK'),
     })
-    const command = `staging.yml -i ${inventory} --extra-vars '${ansibleExtraVars}' --tags create-spa`
-
-    const playbookResponse = await (() => new Promise<[boolean, string]>(async (resolve, _) => {
-      try {
-        console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_CREATE_STAGING_URL(stagingUrl)))
-        const response = await this._playbook.command(command)
-        resolve([!response.raw.includes(ansiblePlaybookFailureIndicator), response.raw])
-      } catch (error) {
-        resolve([false, error])
-      }
-    }))()
 
     if (!playbookResponse[0]) {
       return Promise.reject([false, playbookResponse[1]])
     }
-    console.log(success(playbookResponse[1]))
-    console.log(success(playbookResponse[1]))
+
     console.log(success(ANSIBLE_MESSAGES.STAGING_URL_CREATED(stagingUrl)))
-    console.log(success(playbookResponse[1]))
 
     return Promise.resolve([true, stagingUrl])
   }
@@ -105,27 +122,17 @@ export default class implements Docker {
     const certDirs =
       names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
 
-    const privateKey = await this._privateKey()
-    const inventory = await this._inventory()
+    console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_DESTROY_DEPLOYMENTS(stagingUrlsDescriptor)))
 
-    if (privateKey === ENV_VARIABLE_NOT_FOUND || inventory === ENV_VARIABLE_NOT_FOUND)
-      return Promise.reject([false, ANSIBLE_ERRORS.PRIVATE_KEY_OR_INVENTORY_NOT_FOUND(privateKey, inventory)])
-
-    const ansibleExtraVars = JSON.stringify({
-
-      ansible_ssh_private_key_file: privateKey,
+    const playbookResponse = await this._executePlaybook(ANSIBLE_COMMANDS.DESTROY_MULTIPLE_SPAS, {
       containerNames: stagingUrls,
       stagingHtdocs,
       certsFilesAndFolders,
       certDirs,
     })
-    const command = `staging.yml -i ${inventory} --extra-vars '${ansibleExtraVars}' --tags destroy-multiple-spas`
 
-    try {
-      console.log(warn(ANSIBLE_MESSAGES.ATTEMPTING_TO_DESTROY_DEPLOYMENTS(stagingUrlsDescriptor)))
-      await this._playbook.command(command)
-    } catch (error) {
-      return Promise.reject([false, error])
+    if (!playbookResponse[0]) {
+      return Promise.reject([false, playbookResponse[1]])
     }
 
     return Promise.resolve([true, ANSIBLE_MESSAGES.DEPLOYMENTS_DESTROYED(names.join(', '))])

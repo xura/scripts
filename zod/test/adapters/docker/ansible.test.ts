@@ -27,12 +27,12 @@ describe('Ansible adapter', () => {
 
   it('calls _playbook.command when calling createSpaContainer', async function () {
     // arrange
-    const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves()
+    const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves({raw: ''})
     const stagingUrlCrrated = sandbox.stub(ANSIBLE_MESSAGES, 'STAGING_URL_CREATED')
     const attemptingToCreateStagingUrl = sandbox.stub(ANSIBLE_MESSAGES, 'ATTEMPTING_TO_CREATE_STAGING_URL')
 
     // act
-    await new Ansible().createSpaContainer('v0.0.24')
+    await new Ansible().createSpaContainer('v0.0.24').catch(error => error)
 
     // assert
     sandbox.assert.calledOnce(command)
