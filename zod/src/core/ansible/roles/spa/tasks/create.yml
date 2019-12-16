@@ -16,10 +16,8 @@
 
 - name: Spin up SPA Container
   docker_container:
+    name: "{{containerName}}"
     image: httpd:alpine
-    state: started
-    recreate: yes
-    restart_policy: always
     env:
       LETSENCRYPT_HOST: "{{containerName}}"
       LETSENCRYPT_EMAIL: joe307bad@gmail.com
