@@ -14,7 +14,6 @@
     image: httpd:alpine
     state: started
     restart_policy: always
-    restart: yes
     env:
       LETSENCRYPT_HOST: "{{containerName}}"
       LETSENCRYPT_EMAIL: joe307bad@gmail.com
