@@ -16,7 +16,6 @@
 
 - name: Spin up SPA Container
   docker_container:
-    name: "{{containerName}}"
     image: httpd:alpine
     state: started
     recreate: yes
