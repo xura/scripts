@@ -13,6 +13,7 @@
     name: "{{containerName}}"
     image: httpd:alpine
     state: started
+    recreate: yes
     restart_policy: always
     env:
       LETSENCRYPT_HOST: "{{containerName}}"
