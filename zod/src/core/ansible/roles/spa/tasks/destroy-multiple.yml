@@ -20,5 +20,4 @@
 
 - name: Destroy SSL certs
   shell: rm -rf "{{item}}"
-  with_items:
-  - "{{certsFilesAndFolders}}"
+  with_items: "{{certsFilesAndFolders}}"
