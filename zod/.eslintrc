@@ -13,7 +13,8 @@
         "no-useless-constructor": "off",
         "prefer-promise-reject-errors": "off",
         "new-cap": "off",
-        "no-console": "off"
+        "no-console": "off",
+        "object-curly-spacing": "off"
       }
     }
   ]

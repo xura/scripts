@@ -46,19 +46,7 @@
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--grep",
-                "outputs an error when a thrown Error occurs within destroyDeployments"
-            ],
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Mocha1",
-            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-            "args": [
-                "--grep",
-                "fails when FAILED is present in ansible command output and does not contain any recoverable errors"
+                "resolves when _playbook.command rejects with an error message containing a recoverable error"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
