@@ -17,7 +17,6 @@ describe('Ansible adapter', () => {
     inject()
     chai.should()
     chai.use(cap)
-    sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     sandbox.stub(console, 'log')
   })
 
@@ -27,6 +26,7 @@ describe('Ansible adapter', () => {
 
   it('calls _playbook.command when calling createSpaContainer', async function () {
     // arrange
+    sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves({raw: ''})
     const stagingUrlCrrated = sandbox.stub(ANSIBLE_MESSAGES, 'STAGING_URL_CREATED')
     const attemptingToCreateStagingUrl = sandbox.stub(ANSIBLE_MESSAGES, 'ATTEMPTING_TO_CREATE_STAGING_URL')
@@ -42,6 +42,7 @@ describe('Ansible adapter', () => {
 
   it('rejects with error when _platbook.command throws an Error when calling createSpaContainer', async function () {
     // arrange
+    sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     const expectedError = new Error('Error thrown')
     sandbox.stub(AnsiblePlaybook.prototype, 'command').throws(expectedError)
     const ansibleAdapter = new Ansible()
@@ -52,6 +53,7 @@ describe('Ansible adapter', () => {
 
   it('calls _playbook.command when calling destroySpaContainers', async function () {
     // arrange
+    sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves()
     const deploymentsDestroyed = sandbox.stub(ANSIBLE_MESSAGES, 'DEPLOYMENTS_DESTROYED')
     const attemptingToDestroyContainers = sandbox.stub(ANSIBLE_MESSAGES, 'ATTEMPTING_TO_DESTROY_DEPLOYMENTS')
@@ -67,6 +69,7 @@ describe('Ansible adapter', () => {
 
   it('rejects with error when _platbook.command throws an Error when calling destroySpaContainers', async function () {
     // arrange
+    sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     const expectedError = new Error('Error thrown')
     sandbox.stub(AnsiblePlaybook.prototype, 'command').throws(expectedError)
     const ansibleAdapter = new Ansible()
@@ -77,6 +80,7 @@ describe('Ansible adapter', () => {
 
   it('calls STAGING_URL_CREATED properly', function () {
     // arrange
+    sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     const stagingUrl = 'example.com'
     const expectedMessage = `A staging container has been deployed at ${stagingUrl}`
 
@@ -89,6 +93,7 @@ describe('Ansible adapter', () => {
 
   it('calls DEPLOYMENTS_DESTROYED properly', function () {
     // arrange
+    sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     const stagingUrlsDescriptor = 'descriptor'
     const expectedMessage = `The following deployments no longer have staging URLs: ${stagingUrlsDescriptor}`
 
@@ -101,6 +106,7 @@ describe('Ansible adapter', () => {
 
   it('calls _privateKey & _inventory properly when given nonexistant files', async function () {
     // arrange
+    sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     sandbox.replace(AnsibleAdapter, 'inventoryPath', 'file-does-not-exist')
     sandbox.replace(AnsibleAdapter, 'privateKeyPath', 'file-does-not-exist')
     const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves()
@@ -115,6 +121,7 @@ describe('Ansible adapter', () => {
 
   it('calls _privateKey & _inventory properly when giving existant files', async function () {
     // arrange
+    sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     sandbox.stub(fs, 'stat').yields(null)
     sandbox.replace(AnsibleAdapter, 'inventoryPath', 'file-exists')
     sandbox.replace(AnsibleAdapter, 'privateKeyPath', 'file-exists')
@@ -126,5 +133,43 @@ describe('Ansible adapter', () => {
 
     // assert
     sandbox.assert.calledWith(command, commandArgs)
+  })
+
+  it('recovers when an ansible playbook outputs "Error creating container: 409 Client Error: Conflict"', async function () {
+    // arrange
+    const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves({raw: 'FAILED! Error creating container: 409 Client Error: Conflict'})
+    const getStub = sandbox.stub(Config.prototype, 'get')
+    const project = 'data'
+    getStub.withArgs('PROJECT').returns(project)
+    const stagingUrl = 'staging.xura.io'
+    getStub.withArgs('STAGING_URL').returns(stagingUrl)
+    const tag = 'v0.0.24'
+    const prettyTag = 'v0024'
+
+    // act
+    const response = await new Ansible().createSpaContainer(tag)
+
+    // assert
+    sandbox.assert.calledOnce(command)
+    expect(response).to.deep.eq([true, `${prettyTag}.${project}.${stagingUrl}`])
+  })
+
+  it('fails when FAILED is present in ansible command output and does not contain any recoverable errors', async function () {
+    // arrange
+    const expectedResponse = {raw: 'FAILED!'}
+    const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves(expectedResponse)
+    const getStub = sandbox.stub(Config.prototype, 'get')
+    const project = 'data'
+    getStub.withArgs('PROJECT').returns(project)
+    const stagingUrl = 'staging.xura.io'
+    getStub.withArgs('STAGING_URL').returns(stagingUrl)
+    const tag = 'v0.0.24'
+
+    // act
+    const response = await new Ansible().createSpaContainer(tag).catch(error => error)
+
+    // assert
+    sandbox.assert.calledOnce(command)
+    expect(response).to.deep.eq([false, expectedResponse.raw])
   })
 })

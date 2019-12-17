@@ -58,7 +58,7 @@
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--grep",
-                "calls _playbook.command when calling destroySpaContainers"
+                "fails when FAILED is present in ansible command output and does not contain any recoverable errors"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

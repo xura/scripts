@@ -1,11 +1,11 @@
-import { Docker } from '../../interfaces/docker'
-import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js'
+import {Docker} from '../../interfaces/docker'
+import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
 import path from 'path'
 import fs from 'fs'
-import { inject, autoInjectable } from 'tsyringe'
-import { Config } from '../../interfaces/config'
-import { success, warn } from '../../core/color'
-import { ENV_VARIABLE_NOT_FOUND } from '../config'
+import {inject, autoInjectable} from 'tsyringe'
+import {Config} from '../../interfaces/config'
+import {success, warn} from '../../core/color'
+import {ENV_VARIABLE_NOT_FOUND} from '../config'
 
 export const ANSIBLE_MESSAGES = {
   STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
@@ -23,6 +23,14 @@ export const inventoryPath = path.resolve(path.join(ansiblePath, '/xura'))
 export const privateKeyPath = path.resolve(path.join(ansiblePath, '/droplet4'))
 
 export const ansiblePlaybookFailureIndicator = 'FAILED!'
+
+export const ansiblePlaybookRecoverableErrors = [
+  // within the gitlab-ci/gitlab_runner, createSpaContainers will throw this error
+  // upon running the ansible-playbook command for spinning up a SPA container, the given play will fail with this error
+  // the container will still spin up and there are no detectable failures other than the playbook response
+  // therfore, this is becoming a "recoverable" error
+  'Error creating container: 409 Client Error: Conflict',
+]
 
 export enum ANSIBLE_COMMANDS {
   CREATE_SPA = 'create-spa',
@@ -75,8 +83,10 @@ export default class implements Docker {
     if (!playbookResponse[0])
       return Promise.reject(playbookResponse[1])
 
+    const playbookCommandSucceeded = (!(playbookResponse[1]?.raw.includes(ansiblePlaybookFailureIndicator)) || ansiblePlaybookRecoverableErrors.some(error => playbookResponse[1]?.raw.includes(error)))
+
     console.log(playbookResponse[1])
-    return Promise.resolve([!(playbookResponse[1]?.raw.includes(ansiblePlaybookFailureIndicator) || false), playbookResponse[1]?.raw])
+    return Promise.resolve([playbookCommandSucceeded, playbookResponse[1]?.raw])
   }
 
   private _runAnsibleCommand: (command: string) => Promise<[boolean, Record<string, any>]> =
