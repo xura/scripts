@@ -1,6 +1,7 @@
 image: timbru31/ruby-node
 
 stages:
+  - Troubleshooting
   - Build
   - Test
   - Deploy
@@ -29,12 +30,13 @@ Test:
     - yarn test
 
 Upload tarbells:
-  stage: Deploy
+  stage: Troubleshooting
   only:
     variables:
       - $CI_COMMIT_REF_NAME == "master"
   script:
     - cd zod
+    - yarn install
     - apt-get update
     - apt-get install rename -y
     - yarn global add @oclif/dev-cli

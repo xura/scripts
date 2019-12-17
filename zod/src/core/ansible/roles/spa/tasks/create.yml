@@ -8,12 +8,16 @@
     url: "{{indexHtmlCdnUrl}}"
     dest: "{{stagingHtdocs}}"
 
+- name: Remove SPA Container if exists
+  docker_container:
+    name: "{{containerName}}"
+    state: absent
+    force_kill: yes
+
 - name: Spin up SPA Container
   docker_container:
     name: "{{containerName}}"
     image: httpd:alpine
-    state: started
-    restart_policy: always
     env:
       LETSENCRYPT_HOST: "{{containerName}}"
       LETSENCRYPT_EMAIL: joe307bad@gmail.com

@@ -106,6 +106,9 @@ export default class implements Cdn {
 
     console.log(success(CDN_MESSAGES.SUCCESSFULLY_DELETED_THESE_DEPLOYMENTS(deleteObjectsDescriptor)))
 
-    return Promise.resolve([true, deploymentsToDelete])
+    return Promise.resolve([
+      true,
+      deploymentsToDelete.map(deployment => deployment.split('/')[deployment.split('/').length - 1]),
+    ])
   }
 }
