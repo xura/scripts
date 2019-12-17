@@ -2,12 +2,12 @@ import 'reflect-metadata'
 import sinon from 'sinon'
 import cap from 'chai-as-promised'
 
-import {AnsiblePlaybook} from 'ansible-playbook-cli-js'
-import Ansible, {ANSIBLE_MESSAGES} from '../../../src/adapters/docker/ansible'
+import { AnsiblePlaybook } from 'ansible-playbook-cli-js'
+import Ansible, { ANSIBLE_MESSAGES } from '../../../src/adapters/docker/ansible'
 import * as AnsibleAdapter from '../../../src/adapters/docker/ansible'
 import Config from '../../../src/adapters/config'
-import {inject} from '../../../src/hooks/init/init'
-import chai, {expect} from 'chai'
+import { inject } from '../../../src/hooks/init/init'
+import chai, { expect } from 'chai'
 import fs from 'fs'
 
 const sandbox = sinon.createSandbox()
@@ -27,7 +27,7 @@ describe('Ansible adapter', () => {
   it('calls _playbook.command when calling createSpaContainer', async function () {
     // arrange
     sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
-    const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves({raw: ''})
+    const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves({ raw: '' })
     const stagingUrlCrrated = sandbox.stub(ANSIBLE_MESSAGES, 'STAGING_URL_CREATED')
     const attemptingToCreateStagingUrl = sandbox.stub(ANSIBLE_MESSAGES, 'ATTEMPTING_TO_CREATE_STAGING_URL')
 
@@ -67,7 +67,7 @@ describe('Ansible adapter', () => {
     sandbox.assert.calledOnce(attemptingToDestroyContainers)
   })
 
-  it('rejects with error when _platbook.command throws an Error when calling destroySpaContainers', async function () {
+  it('rejects with error when _playbook.command throws an Error when calling destroySpaContainers', async function () {
     // arrange
     sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
     const expectedError = new Error('Error thrown')
@@ -76,6 +76,21 @@ describe('Ansible adapter', () => {
 
     // act
     await expect(ansibleAdapter.destroySpaContainers([''])).to.eventually.be.rejected.then(error => expect(error[1]).to.equal(expectedError))
+  })
+
+  it('resolves when _playbook.command rejects with an error message containing a recoverable error', async function () {
+    // arrange
+    sandbox.stub(Config.prototype, 'get').withArgs(sinon.match.any).returns('ENV_VARIABLE')
+    const expectedError = 'Error creating container: 409 Client Error: Conflict'
+    sandbox.stub(AnsiblePlaybook.prototype, 'command')
+      .rejects()
+      .returns(Promise.reject(expectedError))
+
+    // act
+    const playbookResponse = await new Ansible().createSpaContainer('v0.0.25').catch(error => error)
+
+    // assert
+    expect(playbookResponse).to.deep.eq([true, 'v0025.ENV_VARIABLE.ENV_VARIABLE'])
   })
 
   it('calls STAGING_URL_CREATED properly', function () {
@@ -137,7 +152,7 @@ describe('Ansible adapter', () => {
 
   it('recovers when an ansible playbook outputs "Error creating container: 409 Client Error: Conflict"', async function () {
     // arrange
-    const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves({raw: 'FAILED! Error creating container: 409 Client Error: Conflict'})
+    const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves({ raw: 'FAILED! Error creating container: 409 Client Error: Conflict' })
     const getStub = sandbox.stub(Config.prototype, 'get')
     const project = 'data'
     getStub.withArgs('PROJECT').returns(project)
@@ -156,7 +171,7 @@ describe('Ansible adapter', () => {
 
   it('fails when FAILED is present in ansible command output and does not contain any recoverable errors', async function () {
     // arrange
-    const expectedResponse = {raw: 'FAILED!'}
+    const expectedResponse = { raw: 'FAILED!' }
     const command = sandbox.stub(AnsiblePlaybook.prototype, 'command').resolves(expectedResponse)
     const getStub = sandbox.stub(Config.prototype, 'get')
     const project = 'data'

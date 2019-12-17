@@ -1,11 +1,11 @@
-import {Docker} from '../../interfaces/docker'
-import {AnsiblePlaybook, Options} from 'ansible-playbook-cli-js'
+import { Docker } from '../../interfaces/docker'
+import { AnsiblePlaybook, Options } from 'ansible-playbook-cli-js'
 import path from 'path'
 import fs from 'fs'
-import {inject, autoInjectable} from 'tsyringe'
-import {Config} from '../../interfaces/config'
-import {success, warn} from '../../core/color'
-import {ENV_VARIABLE_NOT_FOUND} from '../config'
+import { inject, autoInjectable } from 'tsyringe'
+import { Config } from '../../interfaces/config'
+import { success, warn } from '../../core/color'
+import { ENV_VARIABLE_NOT_FOUND } from '../config'
 
 export const ANSIBLE_MESSAGES = {
   STAGING_URL_CREATED: (stagingUrl: string) => `A staging container has been deployed at ${stagingUrl}`,
@@ -66,6 +66,9 @@ export default class implements Docker {
   private _spaHtDocs = (name: string) =>
     `${this._config.get('STAGING_HTDOCS')}/${this._project}/${name}`
 
+  private _containsRecoverableError = (playbookResponse: [boolean, { raw: string }]) =>
+    ansiblePlaybookRecoverableErrors.some(error => playbookResponse[1]?.raw.includes(error))
+
   private async _executePlaybook(tag: string, extraVars: Record<string, any>): Promise<[boolean, string]> {
     const privateKey = await this._privateKey()
     const inventory = await this._inventory()
@@ -83,16 +86,26 @@ export default class implements Docker {
     if (!playbookResponse[0])
       return Promise.reject(playbookResponse[1])
 
-    const playbookCommandSucceeded = (!(playbookResponse[1]?.raw.includes(ansiblePlaybookFailureIndicator)) || ansiblePlaybookRecoverableErrors.some(error => playbookResponse[1]?.raw.includes(error)))
+    const playbookCommandSucceeded =
+      !(playbookResponse[1]?.raw.includes(ansiblePlaybookFailureIndicator)) ||
+      this._containsRecoverableError(playbookResponse)
 
     console.log(playbookResponse[1])
     return Promise.resolve([playbookCommandSucceeded, playbookResponse[1]?.raw])
   }
 
-  private _runAnsibleCommand: (command: string) => Promise<[boolean, Record<string, any>]> =
+  private _runAnsibleCommand: (command: string) => Promise<[boolean, { raw: string }]> =
     async command => {
       try {
-        return Promise.resolve([true, await this._playbook.command(command)])
+        const response =
+          await this._playbook.command(command).catch(error => {
+            if (this._containsRecoverableError([false, { raw: error }]))
+              return { raw: error }
+
+            throw new Error(error)
+          })
+
+        return Promise.resolve([true, response])
       } catch (error) {
         return Promise.reject([false, error])
       }
