@@ -2,38 +2,38 @@ image: timbru31/ruby-node
 
 stages:
   - Troubleshooting
-  - Build
-  - Test
-  - Deploy
+#   - Build
+#   - Test
+#   - Deploy
 
-cache:
-  paths:
-    - zod/node_modules/
+# cache:
+#   paths:
+#     - zod/node_modules/
 
-Install Dependencies:
-  stage: Build
-  script:
-    - cd zod
-    - yarn install
+# Install Dependencies:
+#   stage: Build
+#   script:
+#     - cd zod
+#     - yarn install
     
-Build:
-  stage: Build
-  script:
-    - cd zod
-    - ./node_modules/typescript/bin/tsc
+# Build:
+#   stage: Build
+#   script:
+#     - cd zod
+#     - ./node_modules/typescript/bin/tsc
 
-Test:
-  stage: Test
-  script:
-    - cd zod
-    - mv .env.example .env
-    - yarn test
+# Test:
+#   stage: Test
+#   script:
+#     - cd zod
+#     - mv .env.example .env
+#     - yarn test
 
 Upload tarbells:
   stage: Troubleshooting
-  only:
-    variables:
-      - $CI_COMMIT_REF_NAME == "master"
+  # only:
+  #   variables:
+  #     - $CI_COMMIT_REF_NAME == "master"
   script:
     - cd zod
     - yarn install
