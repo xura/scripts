@@ -18,7 +18,9 @@
     state: absent
   with_items: "{{certDirs}}"
 
-- name: Destroy SSL certs
-  shell: "rm -rf {{item}}"
-  with_items: 
-  - "{{certsFilesAndFolders}}"
+# - name: Destroy SSL certs
+#   file:
+#     path: "{{item}}"
+#     state: absent
+#   with_items: 
+#   - "{{certsFilesAndFolders}}"

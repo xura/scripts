@@ -32,6 +32,13 @@ export const ansiblePlaybookRecoverableErrors = [
   'Error creating container: 409 Client Error: Conflict',
 ]
 
+export const certFileExtensions = [
+  'dhparam.pem',
+  'key',
+  'chain.pem',
+  'crt'
+]
+
 export enum ANSIBLE_COMMANDS {
   CREATE_SPA = 'create-spa',
   DESTROY_MULTIPLE_SPAS = 'destroy-multiple-spas'
@@ -139,8 +146,9 @@ export default class implements Docker {
   async destroySpaContainers(names: string[]): Promise<[boolean, string]> {
     const stagingUrls = names.map(name => this._spaContainerName(name))
     const stagingHtdocs = names.map(name => this._spaHtDocs(name))
+    // TODO write tests around new flatMap implementaiton to certsFilesAndFolders
     const certsFilesAndFolders =
-      names.map(name => `${this._stagingCertsDir}/${this._removePeriods(name)}.*`)
+      names.flatMap(name => certFileExtensions.map(extension => `${this._stagingCertsDir}/${this._removePeriods(name)}.${extension}`))
     const stagingUrlsDescriptor = stagingUrls.join(', ')
     const certDirs =
       names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
@@ -150,8 +158,7 @@ export default class implements Docker {
     const playbookResponse = await this._executePlaybook(ANSIBLE_COMMANDS.DESTROY_MULTIPLE_SPAS, {
       containerNames: stagingUrls,
       stagingHtdocs,
-      certsFilesAndFolders,
-      certDirs,
+      certDirs: [...certDirs, ...certsFilesAndFolders],
     })
 
     if (!playbookResponse[0]) {
