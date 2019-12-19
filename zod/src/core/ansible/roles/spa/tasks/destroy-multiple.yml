@@ -19,5 +19,6 @@
   with_items: "{{certDirs}}"
 
 - name: Destroy SSL certs
-  shell: rm -rf "{{item}}"
-  with_items: "{{certsFilesAndFolders}}"
+  shell: "rm -rf {{item}}"
+  with_items: 
+  - "{{certsFilesAndFolders}}"
