@@ -1,7 +1,6 @@
 image: timbru31/ruby-node
 
 stages:
-  - Troubleshooting
   - Build
   - Test
   - Deploy
@@ -30,7 +29,7 @@ Test:
     - yarn test
 
 Upload tarbells:
-  stage: Troubleshooting
+  stage: Deploy
   only:
     variables:
       - $CI_COMMIT_REF_NAME == "master"
