@@ -16,11 +16,5 @@
   file:
     path: "{{item}}" 
     state: absent
-  with_items: "{{certDirs}}"
-
-# - name: Destroy SSL certs
-#   file:
-#     path: "{{item}}"
-#     state: absent
-#   with_items: 
-#   - "{{certsFilesAndFolders}}"
+  with_items: 
+  - "{{certsFilesAndFolders}}"

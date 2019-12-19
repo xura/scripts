@@ -36,7 +36,7 @@ export const certFileExtensions = [
   'dhparam.pem',
   'key',
   'chain.pem',
-  'crt'
+  'crt',
 ]
 
 export enum ANSIBLE_COMMANDS {
@@ -148,7 +148,8 @@ export default class implements Docker {
     const stagingHtdocs = names.map(name => this._spaHtDocs(name))
     // TODO write tests around new flatMap implementaiton to certsFilesAndFolders
     const certsFilesAndFolders =
-      names.flatMap(name => certFileExtensions.map(extension => `${this._stagingCertsDir}/${this._removePeriods(name)}.${extension}`))
+      names.flatMap(name =>
+        certFileExtensions.map(extension => `${this._stagingCertsDir}/${this._removePeriods(name)}.${extension}`))
     const stagingUrlsDescriptor = stagingUrls.join(', ')
     const certDirs =
       names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
@@ -158,7 +159,7 @@ export default class implements Docker {
     const playbookResponse = await this._executePlaybook(ANSIBLE_COMMANDS.DESTROY_MULTIPLE_SPAS, {
       containerNames: stagingUrls,
       stagingHtdocs,
-      certDirs: [...certDirs, ...certsFilesAndFolders],
+      certsFilesAndFolders: [...certDirs, ...certsFilesAndFolders],
     })
 
     if (!playbookResponse[0]) {
