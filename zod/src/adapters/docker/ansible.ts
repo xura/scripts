@@ -149,7 +149,7 @@ export default class implements Docker {
     // TODO write tests around new flatMap implementaiton to certsFilesAndFolders
     const certsFilesAndFolders =
       names.flatMap(name =>
-        certFileExtensions.map(extension => `${this._stagingCertsDir}/${this._removePeriods(name)}.${extension}`))
+        certFileExtensions.map(extension => `${this._stagingCertsDir}/${this._spaContainerName(name)}.${extension}`))
     const stagingUrlsDescriptor = stagingUrls.join(', ')
     const certDirs =
       names.map(name => `${this._stagingCertsDir}/${this._spaContainerName(name)}`)
