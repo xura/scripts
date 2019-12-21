@@ -1,0 +1,2 @@
+find ../../ -maxdepth 2 -type d -name .git -execdir git add . \;
+find ../../ -maxdepth 2 -type d -name .git -execdir git commit \;
