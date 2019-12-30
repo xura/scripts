@@ -1,0 +1,1 @@
+find ../../ -maxdepth 2 -type d -name .git -execdir yarn install \;
