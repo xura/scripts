@@ -1,0 +1,18 @@
+{
+  "name": "poly",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/listr": "^0.14.2",
+    "@types/node": "^13.11.1",
+    "@types/webpack": "^4.41.10",
+    "listr": "^0.14.3",
+    "observable-process": "^7.0.2",
+    "rxjs": "^6.5.5",
+    "ts-node": "^8.8.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1"
+  },
+  "dependencies": {}
+}
