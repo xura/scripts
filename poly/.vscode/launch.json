@@ -15,6 +15,20 @@
             ],
             "cwd": "${workspaceRoot}",
             "console": "integratedTerminal",
+        },
+        {
+            "name": "Run webpack",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "-r",
+                "ts-node/register",
+                "${workspaceFolder}/commands/run-webpack.ts",
+                "./index.js",
+                "project1"
+            ],
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal",
         }
     ]
 }

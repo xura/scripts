@@ -1,1 +1,1 @@
-alert("another-project")swsqwwq
+alert("another-projsswedweect")

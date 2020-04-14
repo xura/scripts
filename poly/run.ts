@@ -6,8 +6,8 @@ import { first, skip } from 'rxjs/Operators';
 console.clear()
 
 const registry: [string, () => ObservableProcess][] = [
-    ["project1", () => createObservableProcess(["ts-node", "./commands/run-webpack", "./index.js"])],
-    ["project2", () => createObservableProcess(["ts-node", "./commands/run-webpack", "./another-project.js"])]
+    ["project1", () => createObservableProcess(["ts-node", "./commands/run-webpack", "./index.js", "project1"])],
+    ["project2", () => createObservableProcess(["ts-node", "./commands/run-webpack", "./another-project.js", "project2"])]
 ]
 
 const processes: (() => [Observable<any>, ListrTask])[] = registry.map(project => () => {
@@ -15,7 +15,11 @@ const processes: (() => [Observable<any>, ListrTask])[] = registry.map(project =
     const p = project[1]() as ObservableProcess;
     const processObservable = new Observable<any>(observer => {
         p.stdout.on("data", function () {
-            observer.next("")
+            const output = p.stdout.fullText().split("\n");
+            observer.next([
+                project[0],
+                output[output.length - 2]
+            ])
         });
     })
 
@@ -25,9 +29,6 @@ const processes: (() => [Observable<any>, ListrTask])[] = registry.map(project =
     ]
 });
 
-// const observable = createObservableProcess(["ts-node", "./commands/run-webpack", "./index.js"])
-// const observable1 = createObservableProcess(["ts-node", "./commands/run-webpack", "./another-project.js"])
-
 let updates = new Observable();
 
 const listrTasks = processes.map(p => {
@@ -36,17 +37,34 @@ const listrTasks = processes.map(p => {
     return () => definition[1];
 })
 
-const newListr = () => new Listr([
-    { title: "Blah", task: () => Promise.resolve() }
-]);
+const newListr = (tasks: ListrTask[]) => new Listr(tasks, {
+    concurrent: true,
+    exitOnError: false
+}).run();
 
-updates.subscribe(_ => {
-    // TODO this hits but we have to figure out how to
-    // reload the current session
-    // it seems since the session is locked by webpack, we cant just
-    // redraw a new listr
-    debugger;
+const errors: any = {};
+
+const subscribe = () => updates.subscribe((stdout: any) => {
+
+    const [project, message] = stdout;
+
+    errors[project] = false;
+    if (message !== "null") {
+        errors[project] = true;
+    }
+    console.clear();
+    newListr(registry.map(p => ({
+        title: p[0],
+        task: () =>
+            errors[p[0]] === true
+                ? Promise.reject(new Error("Failed"))
+                : Promise.resolve()
+    }))).catch(e => { })
 })
 
-new Listr(listrTasks.map(t => t()), { concurrent: true }).run();
-// new Listr(processes.map(p => p()[1]), { concurrent: true }).run();
+new Listr(listrTasks.map(t => t()), {
+    concurrent: true,
+    exitOnError: false
+}).run().then(
+    _ => subscribe()
+);
