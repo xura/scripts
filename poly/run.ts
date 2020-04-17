@@ -46,13 +46,11 @@ const errors: any = {};
 
 const subscribe = () => updates.subscribe((stdout: any) => {
 
+    console.clear();
     const [project, message] = stdout;
 
-    errors[project] = false;
-    if (message !== "null") {
-        errors[project] = true;
-    }
-    console.clear();
+    errors[project] = message !== "null";
+
     newListr(registry.map(p => ({
         title: p[0],
         task: () =>
